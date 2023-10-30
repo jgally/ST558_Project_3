@@ -1,0 +1,63 @@
+---
+title: "Project 3"
+author: "Jasmine Gallaway and Keren Vivas"
+date: "2023-10-30"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+```{r cleaning_data}
+library(readr)  
+library(dplyr)  
+library(ggplot2)  
+library(caret)  
+
+#readin data  
+diabetes_data <- read_csv("diabetes_binary_health_indicators_BRFSS2015.csv")  
+
+#making a tibble
+diabetes_data <- as_tibble(diabetes_data)  
+
+#changing diabetes_binary to factor  
+diabetes_data$Diabetes_binary <- diabetes_data$Diabetes_binary %>% 
+  factor(levels = c(0,1,2),
+         labels = c("No Diabetes", "Prediabetes", "Diabetes"))  
+
+#combine education levels one and two  
+diabetes_data$Education <- diabetes_data$Education %>% 
+  factor(levels = c(1,2,3,4,5,6), 
+            labels = c("None/Elementary", "None/Elementary", "Some High School", "High School Graduate", "Some College", "College Graduate"))  
+
+#changing sex to factor  
+diabetes_data$Sex <- diabetes_data$Sex %>% 
+  factor(levels = c(0,1),
+         labels = c("female", "male"))  
+
+#changing age to factor  
+diabetes_data$Age <- diabetes_data$Age %>% 
+  factor(levels = c(1,2,3,4,5,6,7,8,9,10,11,12,13),
+         labels = c("18-24", "25-30", "31-35", "36-40", "41-45", "46-50", "51-55", "56-60", "61-65", "66-70", "71-75", "76-80", "80+"))  
+``` 
+
+```{r EDA}
+#gathering summary statistics  
+sum_data <- diabetes_data %>% 
+  summarize(mean = mean(BMI),
+            sd = sd(BMI),
+            min = min(BMI),
+            max = max(BMI),
+            IQR = IQR(BMI))  
+#printing out  
+print(sum_data)  
+
+#boxplot to visualize the summary values  
+sum_plot1 <- ggplot(diabetes_data, aes(x = Age, y = BMI)) + 
+  geom_jitter()  
+
+sum_plot1  
+
+#contingency tables
+```
+
