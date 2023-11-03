@@ -90,10 +90,30 @@ diabetes_data$GenHlth <- diabetes_data$GenHlth %>%
   factor(levels = c(1, 2, 3, 4, 5),
          labels = c("Excellent", "Very Good", "Good", "Fair", "Poor"))  
 
-#Changing nodocbcCost to factor  
+#Changing DiffWalk to factor  
 diabetes_data$DiffWalk <- diabetes_data$DiffWalk %>% 
   factor(levels = c(0, 1),
-         labels = c("No", "Yes"))  
+         labels = c("No", "Yes")) 
+
+#changing HighBP to factor
+diabetes_data$HighBP <- diabetes_data$HighBP %>%
+  factor(levels = c(0, 1),
+         labels = c("no high BP", "high BP"))
+
+#changing HighChol to factor
+diabetes_data$HighChol <- diabetes_data$HighChol %>%
+  factor(levels = c(0,1),
+         labels = c("no high cholesterol", "high cholesterol"))
+
+#changing CholCheck to factor
+diabetes_data$CholCheck <- diabetes_data$CholCheck %>%
+  factor(levels = c(0,1),
+         labels = c("no check in 5 years", "check in 5 years"))
+
+#changing Income to factor
+diabetes_data$Income <- diabetes_data$Income %>%
+  factor(levels = c(1,2,3,4,5,6,7,8),
+         labels = c("Less than $10k", "$10k to less than $15k", "$15kto less than $20k", "$20k to less than $25k", "$25k to less than $35k", "$35k to less than $50k", "$50k to less than $75k", "$75k or more"))
 ``` 
 
 ```{r EDA}
