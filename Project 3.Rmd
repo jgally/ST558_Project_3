@@ -57,7 +57,39 @@ sum_plot1 <- ggplot(diabetes_data, aes(x = Age, y = BMI)) +
   geom_jitter()  
 
 sum_plot1  
+```
+```{r Contingency tables}
 
-#contingency tables
+ #1-way contingency table
+ one_way_table <- table(diabetes_data$Fruits)
+ one_way_table
+ 
+ #2-way contingency table
+ two_way_table <- table(diabetes_data$Smoker, diabetes_data$HighChol)
+ two_way_table
+ 
+ #3-way contingency table
+ three_way_table <- table(diabetes_data$HighBP, diabetes_data$HighChol, diabetes_data$HeartDiseaseorAttack)
+ three_way_table
+
 ```
 
+```{r Contingency tables}
+#Violin plot
+ggplot(diabetes_data, aes(x = Sex, y = MentHlth)) +
+  geom_violin(fill = "lightblue", color = "blue", alpha = 0.7) +
+  labs(title = "Mental health condition across gender", x = "Gender", y = "Mental health condition") +
+  theme_minimal()
+
+#Bar plot
+ggplot(data = diabetes_data, aes(x = Age, y = PhysActivity , fill = Age)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Stacked Bar Plot of Physical activity days by Age Group", x = "Age Group", y = "Physical activity (days)") +
+  theme_minimal()
+
+#Scatter plot
+ggplot(diabetes_data, aes(x = BMI, y = MentHlth)) +
+  geom_point(aes(color = Sex), size = 3) +
+  labs(title = "Scatterplot of BMI vs. Mental health", x = "BMI", y = "MentHlth") +
+  theme_minimal()
+```
