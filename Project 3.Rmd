@@ -168,3 +168,10 @@ ggplot(diabetes_data, aes(x = BMI, y = MentHlth)) +
   labs(title = "Scatterplot of BMI vs. Mental health", x = "BMI", y = "MentHlth") +
   theme_minimal()
 ```
+
+```{r Split data}
+set.seed(3033)
+intrain <- createDataPartition(y = diabetes_data$Diabetes_binary, p= 0.8, list = FALSE)
+training <- data[intrain,]
+testing <- data[-intrain,]
+```
