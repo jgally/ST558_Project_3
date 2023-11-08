@@ -13,6 +13,7 @@ library(readr)     # To read data into R
 library(dplyr)     # To clean data
 library(ggplot2)   # To plot graphs
 library(caret)     # To create predictive models and test them
+library (shinny)   # To automate the creation of 5 github_documents
 
 # Render the R Markdown file to README.md
 
