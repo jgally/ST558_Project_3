@@ -2,10 +2,10 @@
 # Project 3 Blog Post
 _by Jasmine Gallaway and Keren Vivas_
 
-Add nicely rendered repo (something like username.github.io/repo-name) 
-[nicely rendered repo]()
+Jasmine, please confirm if the links are ok :)
 
-Please confirm if it is ok :)  
+[Nicely rendered repo](https://jgally.github.io/ST558_Project_3/)
+
 [Usual github repo](https://github.com/jgally/ST558_Project_3.git)
 
 ## _**what would we do differently?**_  
