@@ -11,8 +11,29 @@ params:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 # 1. Introduction section
-The data analized was the Diabetes Health Indicators Dataset encompasses over 200,000 survey responses, offering valuable insights into how this disease affects the health of millions of Americans and its impact on both individuals and the nation's economy.
-#The data set includes information on various aspects such as the current diabetes status of respondents, their demographics, physical and mental health metrics, habits, addictions, diet, and more. These data hold the potential to predict an individual's likelihood of having diabetes or being at a high risk of developing it, based on specific factors. Additionally, it aims to identify the key factors contributing to the risk of diabetes. 
+
+Purpose EDA and modeling
+End result we will create
+
+
+The data analized is part of the Diabetes Health Indicators Dataset collected by the Behavioral Risk Factor Surveillance System (BRFSS), which is a health-related telephone survey that is collected annually by the CDC, in 2015. This data has over 200,000 survey responses comprising 21 variables/factors and a response variable called "Diabetes_binary". The response variable is characterized by has three levels:
+
+0 = No diabetes or only during pregnancy
+1 = Prediabetes
+2 = Diabetes
+
+The variables factors includes information on various aspects such as the current diabetes status of respondents, their demographics, physical and mental health metrics, habits, diet, and more. 
+
+The selected variables to analyzed are the following:
+
+- Demographics: Age and Sex of the respondent both categorical variables.
+- Physical conditions: HighBP, HighChol, and HeartDiseaseorAttack categorical variable with 0 and 1 values and Body Mass Index BMI continuos data with values from 12 to 98. 
+- Mental conditions: MentHlth variable is a continuos variable of how many days their mental health was not good so, it takes values from 1 to 30.
+- Diet conditions: Fruits and Veggies both categorical variables with values 1 or 0 based on whether respondent consume them 1 or more times per day.
+- Habits: Smoker variable and PhysActivity both categorical variables with values 1 or 0 based on whether respondent have smoked at least 100 cigarettes in their entire life and whether respondent have exercised in the last month.
+
+
+These data hold the potential to predict an individual's likelihood of having diabetes or being at a high risk of developing it, based on specific factors. Additionally, it aims to identify the key factors contributing to the risk of diabetes. 
 #Furthermore, this analysis will be presented separately based on the level of education, allowing us to examine how this demographic factor influences the overall findings.
 
 # 2. Required packages section
