@@ -149,7 +149,7 @@ sum_plot1
 
 ```
 
-```{r Contingency tables}
+```{r Plots}
 #Violin plot
 ggplot(diabetes_data, aes(x = Sex, y = MentHlth)) +
   geom_violin(fill = "lightblue", color = "blue", alpha = 0.7) +
