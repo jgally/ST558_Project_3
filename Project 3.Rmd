@@ -3,8 +3,8 @@ title: "Project 3"
 author: "Jasmine Gallaway and Keren Vivas"
 date: "2023-10-30"
 output: github_document
-#params:
- #Education: "None/Elementary"
+params:
+ Education: "None/Elementary"
 ---
 
 ```{r setup, include=FALSE}
