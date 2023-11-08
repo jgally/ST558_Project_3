@@ -252,19 +252,40 @@ cat("The best model is Model", best_model_index, "with a log loss of", best_log_
 
 ## _What a LASSO logistic regression model is and why we might try to use this over basic logistic regresion?_
 
-Add answer
+LASSO (Least Absolute Shrinkage and Selection Operator) is a type of regularized logistic regression. It adds a penalty term to the logistic regression's likelihood function to encourage feature selection by driving some coefficients to exactly zero. This can improve model interpretability and reduce overfitting and that is why it is used over the basic logistic regresion.
+
+LASSO logistic regression is a valuable tool when you have high-dimensional datasets with potentially redundant or irrelevant features. It can improve model performance, reduce overfitting, and enhance model interpretability by automatically selecting the most relevant predictors while eliminating the least important ones. However, the choice between basic logistic regression and LASSO logistic regression depends on the specific characteristics of your data and the goals of your analysis
 
 ## Fit a LASSO logistic regression model and choose the best model
 
-Add answer
+model_lasso <- train(Diabetes_binary ~ ., data = training_data, method = "glmnet",
+                     trControl = trainControl(method = "cv", number = 5),
+                     tuneGrid = expand.grid(alpha = 1, lambda = seq(0.001, 1, by = 0.001)))
+
 
 ## _what a classification tree model is and why we might try to use it?_
 
-Add answer
+A classification tree is a decision tree that is used for classification tasks. It recursively splits the data into subsets based on the predictors and their values to make predictions. Different values of the complexity parameter control the tree's depth and complexity. Cross-validation is typically used to select the best complexity parameter.
 
 ## Fit a classification tree with varying values for the complexity parameter and choose the best model (best complexity parameter)
 
-Add answer
+library(rpart)
+
+# Fit a classification tree
+tree_model <- rpart(Diabetes_binary ~ ., data = training_data, method = "class")
+
+# Define the control parameters for the rpart function
+ctrl <- rpart.control(cp = 0.01) # Start with a small value for cp
+
+# Fit the tree with cross-validation and find the best cp value
+cv_tree_model <- rpart(Diabetes_binary ~ ., data = training_data, method = "class", control = ctrl)
+
+# Print the complexity parameter table
+printcp(cv_tree_model)
+
+#Prune the tree
+best_tree_model <- prune(cv_tree_model, cp = best_cp_value)
+
 
 ## _what a random forest is and why we might use it instead of a basic classification tree?_
 
