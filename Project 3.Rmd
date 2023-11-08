@@ -3,6 +3,8 @@ title: "Project 3"
 author: "Jasmine Gallaway and Keren Vivas"
 date: "2023-10-30"
 output: github_document
+#params:
+ #Education: "None/Elementary"
 ---
 
 ```{r setup, include=FALSE}
@@ -13,6 +15,7 @@ library(readr)
 library(dplyr)  
 library(ggplot2)  
 library(caret)  
+ibrary(shiny)
 
 #readin data  
 diabetes_data <- read_csv("diabetes_binary_health_indicators_BRFSS2015.csv")  
@@ -116,6 +119,12 @@ diabetes_data$Income <- diabetes_data$Income %>%
          labels = c("Less than $10k", "$10k to less than $15k", "$15kto less than $20k", "$20k to less than $25k", "$25k to less than $35k", "$35k to less than $50k", "$50k to less than $75k", "$75k or more"))
 ``` 
 
+#```{r filter data for the specified education level}
+#subset_data <- diabetes_data %>%
+#  filter(Education == params$Education)
+#```
+
+
 ```{r EDA}
 #gathering summary statistics  
 sum_data <- diabetes_data %>% 
@@ -202,10 +211,18 @@ best_model <- switch(
   model2 = model2,
   model3 = model3
 )
-
 best_log_loss <- log_loss_values[best_model_index]
-
 cat("The best model is Model", best_model_index, "with a log loss of", best_log_loss, "\n")
 ```
 
+```{r}
+# Use a single level first and then add a params argument to YAML header
+#education_levels <- c("None/Elementary", "Some High School", "High School Graduate", "Some Collage", "College Graduate")
 
+#params_list <- lapply(education_levels, function(level) {
+#  list(education_level = level)
+#})
+
+#rmarkdown::render("Analysis.Rmd", params = list(Education ="None/Elementary"))
+
+```
