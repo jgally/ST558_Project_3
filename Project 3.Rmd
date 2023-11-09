@@ -40,7 +40,10 @@ library(ggplot2)
 library(caret) 
 library(rmarkdown)
 library(shiny)
-library(purr)
+library(purrr)  
+library(randomForest)  
+library(gbm)  
+library(MLmetrics)  #For logLoss()
 ```
 # 3. Data section
 ```{r cleaning_data}
@@ -208,12 +211,12 @@ ggplot(diabetes_data, aes(x = BMI, y = MentHlth)) +
 ```{r Split data}
 set.seed(3033)
 intrain <- createDataPartition(y = diabetes_data$Diabetes_binary, p= 0.7, list = FALSE)
-training <- data[intrain,]
-testing <- data[-intrain,]
+training <- diabetes_data[intrain,]
+testing <- diabetes_data[-intrain,]
 ```
 ## _What log loss is and why we may prefer it to things like accuracy?_
 
-Add answer
+Logarithmic loss is metric used to evaluate how well a model fits. Also known as cross-entropy loss, log loss is used on binary classification models where the responses are either 0 or 1. Log loss calculates the difference between the predicted probabilities and the actual values. The lower the log loss value, the better the fit of the model is to the data. Log loss is preferred with this data set because of our focus on the binary response of whether or not someone has diabetes. Log loss focuses on models that predict the class better and penalizes models that are further from the class. 
 
 ## _What a logistic regression is and why we apply it to this kind of data?_
 
