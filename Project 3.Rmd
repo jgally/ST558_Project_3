@@ -208,6 +208,9 @@ ggplot(diabetes_data, aes(x = BMI, y = MentHlth)) +
 ```
 
 # 5. Modeling
+Selected variables
+Sex, Income, Age, BMI, MentHlth, PhysHlth, HighBP, Fruits, HvyAlcoholConsu, NoDocbcCost
+
 ```{r Split data}
 set.seed(3033)
 intrain <- createDataPartition(y = diabetes_data$Diabetes_binary, p= 0.7, list = FALSE)
