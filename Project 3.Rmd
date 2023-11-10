@@ -3,8 +3,8 @@ title: "Project 3"
 author: "Jasmine Gallaway and Keren Vivas"
 date: "2023-10-30"
 output: github_document
-params:
- Education: "None/Elementary"
+#params:
+ #Education: "None/Elementary"
 ---
 
 ```{r setup, include=FALSE}
@@ -223,35 +223,35 @@ Logarithmic loss is metric used to evaluate how well a model fits. Also known as
 Logistic regression is a form of predictive analysis in which the regression models the relationship(s) of a binary response variable to one or more other variables. Logistic regression is similar to the use of linear regression except that logistic regression is used for classification problems, has a range of 0 to 1 like log loss, and does not require a linear relationship between the variables.
 
 ## Fit  3 candidate logistic regression models and choose the best
-```{r Three candidate logistic models}
+#```{r Three candidate logistic models}
 # Model 1: Logistic Regression with default parameters
-model1 <- glm(Diabetes_binary ~ ., data = training, family = binomial)
-y_pred1 <- predict(model1, newdata = testing, type = "response")
-log_loss_model1 <- logLoss(obs = testing$Diabetes_binary, pred = y_pred1)
+#model1 <- glm(Diabetes_binary ~ ., data = training, family = binomial)
+#y_pred1 <- predict(model1, newdata = testing, type = "response")
+#log_loss_model1 <- logLoss(obs = testing$Diabetes_binary, pred = y_pred1)
 
 # Model 2: Logistic Regression with different parameters (e.g., regularization)
-model2 <- glm(Diabetes_binary ~ ., data = training, family = binomial, control = glm.control(alpha = 0.1))
-y_pred2 <- predict(model2, newdata = testing, type = "response")
-log_loss_model2 <- logLoss(obs = testing$Diabetes_binary, pred = y_pred2)
+#model2 <- glm(Diabetes_binary ~ ., data = training, family = binomial, control = glm.control(alpha = 0.1))
+#y_pred2 <- predict(model2, newdata = testing, type = "response")
+#log_loss_model2 <- logLoss(obs = testing$Diabetes_binary, pred = y_pred2)
 
 # Model 3: Logistic Regression with more parameter variations
-model3 <- glm(Diabetes_binary ~ ., data = training, family = binomial, control = glm.control(alpha = 1.0, weight = TRUE))
-y_pred3 <- predict(model3, newdata = testing, type = "response")
-log_loss_model3 <- logLoss(obs = testing$Diabetes_binary, pred = y_pred3)
+#model3 <- glm(Diabetes_binary ~ ., data = training, family = binomial, control = glm.control(alpha = 1.0, weight = TRUE))
+#y_pred3 <- predict(model3, newdata = testing, type = "response")
+#log_loss_model3 <- logLoss(obs = testing$Diabetes_binary, pred = y_pred3)
 
 # Choose the model with the lowest log loss
-log_loss_values <- c(log_loss_model1, log_loss_model2, log_loss_model3)
-best_model_index <- which.min(log_loss_values)
+#log_loss_values <- c(log_loss_model1, log_loss_model2, log_loss_model3)
+#best_model_index <- which.min(log_loss_values)
 
-best_model <- switch(
-  best_model_index,
-  model1 = model1,
-  model2 = model2,
-  model3 = model3
-)
-best_log_loss <- log_loss_values[best_model_index]
-cat("The best model is Model", best_model_index, "with a log loss of", best_log_loss, "\n")
-```
+#best_model <- switch(
+#  best_model_index,
+#  model1 = model1,
+#  model2 = model2,
+#  model3 = model3
+#)
+#best_log_loss <- log_loss_values[best_model_index]
+#cat("The best model is Model", best_model_index, "with a log loss of", best_log_loss, "\n")
+#```
 
 ## _What a LASSO logistic regression model is and why we might try to use this over basic logistic regresion?_
 
@@ -261,9 +261,9 @@ LASSO logistic regression is a valuable tool when you have high-dimensional data
 
 ## Fit a LASSO logistic regression model and choose the best model
 
-model_lasso <- train(Diabetes_binary ~ ., data = training_data, method = "glmnet",
-                     trControl = trainControl(method = "cv", number = 5),
-                     tuneGrid = expand.grid(alpha = 1, lambda = seq(0.001, 1, by = 0.001)))
+#model_lasso <- train(Diabetes_binary ~ ., data = training_data, method = "glmnet",
+ #                    trControl = trainControl(method = "cv", number = 5),
+  #                   tuneGrid = expand.grid(alpha = 1, lambda = seq(0.001, 1, by = 0.001)))
 
 
 ## _what a classification tree model is and why we might try to use it?_
@@ -275,19 +275,19 @@ A classification tree is a decision tree that is used for classification tasks. 
 library(rpart)
 
 # Fit a classification tree
-tree_model <- rpart(Diabetes_binary ~ ., data = training_data, method = "class")
+#tree_model <- rpart(Diabetes_binary ~ ., data = training_data, method = "class")
 
 # Define the control parameters for the rpart function
-ctrl <- rpart.control(cp = 0.01) # Start with a small value for cp
+#ctrl <- rpart.control(cp = 0.01) # Start with a small value for cp
 
 # Fit the tree with cross-validation and find the best cp value
-cv_tree_model <- rpart(Diabetes_binary ~ ., data = training_data, method = "class", control = ctrl)
+#cv_tree_model <- rpart(Diabetes_binary ~ ., data = training_data, method = "class", control = ctrl)
 
 # Print the complexity parameter table
-printcp(cv_tree_model)
+#printcp(cv_tree_model)
 
 #Prune the tree
-best_tree_model <- prune(cv_tree_model, cp = best_cp_value)
+#best_tree_model <- prune(cv_tree_model, cp = best_cp_value)
 
 
 ## _what a random forest is and why we might use it instead of a basic classification tree?_
@@ -337,7 +337,7 @@ rmarkdown::render("Project 3.Rmd", out_put_file = "None_Elementary.html", params
 #Education_levels <- unique(diabetes_data$Education)
 
 #create filenames
-#output_file <- paste0(Education_levels, "html")
+#output_file <- paste0(Education_levels, ".html")
 
 #create a list for each level of education with just the level name parameter
 #params = lapply(Education_levels, FUN = function(x){list(Education = x)})
