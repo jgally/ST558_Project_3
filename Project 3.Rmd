@@ -220,7 +220,7 @@ Logarithmic loss is metric used to evaluate how well a model fits. Also known as
 
 ## _What a logistic regression is and why we apply it to this kind of data?_
 
-Add answer
+Logistic regression is a form of predictive analysis in which the regression models the relationship(s) of a binary response variable to one or more other variables. Logistic regression is similar to the use of linear regression except that logistic regression is used for classification problems, has a range of 0 to 1 like log loss, and does not require a linear relationship between the variables.
 
 ## Fit  3 candidate logistic regression models and choose the best
 ```{r Three candidate logistic models}
@@ -292,7 +292,7 @@ best_tree_model <- prune(cv_tree_model, cp = best_cp_value)
 
 ## _what a random forest is and why we might use it instead of a basic classification tree?_
 
-Add answer
+A random forest is an ensemble tree method of modeling. Random forest is similar to the bagging method of modeling except that a random forest does not use all the variables/predictors. A random forest uses a subset of predictors which reduces variance better than bagging or a basic classification tree does. 
 
 ## Fit a random forest model and choose the best model
 
