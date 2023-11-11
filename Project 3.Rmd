@@ -81,12 +81,12 @@ diabetes_data$Fruits <- diabetes_data$Fruits %>%
 #Changing physical activity to factor  
 diabetes_data$PhysActivity <- diabetes_data$PhysActivity %>% 
   factor(levels = c(0, 1),
-         labels = c("None", "Some in past 30 days"))  
+         labels = c("None", "Yes"))  
 
 #Changing smoker to factor  
 diabetes_data$Smoker <- diabetes_data$Smoker %>% 
   factor(levels = c(0, 1),
-         labels = c("No", "Yes, has smoked at least 100 cigarettes"))  
+         labels = c("No", "Yes"))  
 
 #Changing stroke to factor  
 diabetes_data$Stroke <- diabetes_data$Stroke %>%
@@ -131,17 +131,17 @@ diabetes_data$DiffWalk <- diabetes_data$DiffWalk %>%
 #changing HighBP to factor
 diabetes_data$HighBP <- diabetes_data$HighBP %>%
   factor(levels = c(0, 1),
-         labels = c("no high BP", "high BP"))
+         labels = c("No high BP", "High BP"))
 
 #changing HighChol to factor
 diabetes_data$HighChol <- diabetes_data$HighChol %>%
   factor(levels = c(0,1),
-         labels = c("no high cholesterol", "high cholesterol"))
+         labels = c("No high cholesterol", "High cholesterol"))
 
 #changing CholCheck to factor
 diabetes_data$CholCheck <- diabetes_data$CholCheck %>%
   factor(levels = c(0,1),
-         labels = c("no check in 5 years", "check in 5 years"))
+         labels = c("No check in 5 years", "Check in 5 years"))
 
 #changing Income to factor
 diabetes_data$Income <- diabetes_data$Income %>%
@@ -156,21 +156,25 @@ subset_data <- diabetes_data %>%
 
 # 4. Summarizations section
 ```{r EDA}
-#gathering summary statistics  
-sum_data <- diabetes_data %>% 
+#gathering summary statistics of BMI  
+sum_data1 <- diabetes_data %>% 
+  group_by(Diabetes_binary) %>%
   summarize(mean = mean(BMI),
             sd = sd(BMI),
             min = min(BMI),
             max = max(BMI),
             IQR = IQR(BMI))  
 #printing out  
-print(sum_data)  
+print(sum_data1)  
 
-#boxplot to visualize the summary values  
-sum_plot1 <- ggplot(diabetes_data, aes(x = Age, y = BMI)) + 
-  geom_jitter()  
-
-sum_plot1  
+#Summary statistics of mental health 
+sum_data2 <- diabetes_data %>% 
+  group_by(Diabetes_binary) %>% 
+  summarize(mean = mean(MentHlth),
+            sd = sd(MentHlth),
+            min = min(MentHlth),
+            max = max(MentHlth))  
+print(sum_data2)
 ```
 ```{r Contingency tables}
 
@@ -184,7 +188,19 @@ sum_plot1
  
  #3-way contingency table
  three_way_table <- table(diabetes_data$HighBP, diabetes_data$HighChol, diabetes_data$HeartDiseaseorAttack)
- three_way_table
+ three_way_table  
+ 
+#4 Contingency table for diabetes_binary vs no doctors visits because of cost  
+ tbl_four <- table(diabetes_data$NoDocbcCost, diabetes_data$Diabetes_binary)  
+ tbl_four
+ 
+#5 Contingency table for diabetes_binary vs general health ratings  
+ tbl_five <- table(diabetes_data$GenHlth, diabetes_data$Diabetes_binary)  
+ tbl_five  
+
+#6 Contingency table for diabetes_binary vs NoDocbcCost vs GenHlth  
+ tbl_six <- table(diabetes_data$GenHlth, diabetes_data$Diabetes_binary, diabetes_data$NoDocbcCost)  
+ tbl_six
 ```
 
 ```{r Plots}
@@ -205,6 +221,8 @@ ggplot(diabetes_data, aes(x = BMI, y = MentHlth)) +
   geom_point(aes(color = Sex), size = 3) +
   labs(title = "Scatterplot of BMI vs. Mental health", x = "BMI", y = "MentHlth") +
   theme_minimal()
+
+
 ```
 
 # 5. Modeling
@@ -333,7 +351,7 @@ Add answer
 ## X. Automation
 ```{r params set up}
 #Do it for 1 first and then all level of education
-rmarkdown::render("Project 3.Rmd", out_put_file = "None_Elementary.html", params = list(Education = "None/Elementary"))
+#rmarkdown::render("Project 3.Rmd", out_put_file = "None_Elementary.html", params = list(Education = "None/Elementary"))
 
 #For all level of education
 #get unique education levels
