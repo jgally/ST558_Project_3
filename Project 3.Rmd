@@ -210,28 +210,67 @@ After initial group summaries we then made several contingency tables in order t
  tbl_six
 ```
 
-We then looked at some additional combinations of variables in graphs to observe other relationships within the data.  
+We then looked at some additional combinations of variables in graphs to observe other relationships within the data. In these plots we are attempting to graph possible relationships between variables. If any trends are found it could give insight to which variables are important to use in our predictive modeling. 
 
 ```{r Plots}
 #Violin plot
 plot1 <- ggplot(diabetes_data, aes(x = Sex, y = MentHlth)) +
   geom_violin(fill = "lightblue", color = "blue", alpha = 0.7) +
   labs(title = "Mental health condition across gender", x = "Gender", y = "Mental health condition") +
-  theme_minimal()
+  theme_minimal() 
+print(plot1)
 
 #Bar plot
 plot2 <- ggplot(data = diabetes_data, aes(x = Age, y = PhysActivity , fill = Age)) +
   geom_bar(stat = "identity") +
   labs(title = "Stacked Bar Plot of Physical activity days by Age Group", x = "Age Group", y = "Physical activity (days)") +
-  theme_minimal()
+  theme_minimal()  
+print(plot2)
 
 #Scatter plot
 plot3 <- ggplot(diabetes_data, aes(x = BMI, y = MentHlth)) +
   geom_point(aes(color = Sex), size = 3) +
-  labs(title = "Scatterplot of BMI vs. Mental health", x = "BMI", y = "MentHlth") +
-  theme_minimal()
+  labs(title = "Scatterplot of BMI vs. Mental health", x = "BMI", y = "Mental Health") +
+  theme_minimal()  
+print(plot3)
 
+#Plot 4 is a count plot of income versus mental health and color coded by the response variable of Diabetes_binary  
+plot4 <- ggplot(diabetes_data, aes(x = Income, y = MentHlth)) + 
+  geom_count(aes(color = Diabetes_binary)) + 
+  labs(title = "Count Plot of Income vs. Mental Health", x = "Income", y = "Mental Health") + 
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))
+print(plot4)
 
+#Plot 5 is a count plot of income versus physical health and color coded by the response variable of Diabetes_binary  
+plot5 <- ggplot(diabetes_data, aes(x = Income, y = PhysHlth)) + 
+  geom_count(aes(color = Diabetes_binary)) + 
+  labs(title = "Count Plot of Income vs. Physical Health", x = "Income", y = "Physical Health") + 
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))
+print(plot5)
+
+#Plot 6 is a bar plot of diabetes_binary versus mental health used to uncrowd the graphs
+plot6 <- ggplot(diabetes_data, aes(x = MentHlth)) + 
+  geom_bar(aes(color = Diabetes_binary, fill = Diabetes_binary)) + 
+  facet_wrap(~Diabetes_binary) + 
+  labs(title = "Bar Plot of Mental Health", x = "How Many Bad Mental Days", y = "Participant Count") + 
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))
+print(plot6)  
+
+#Plot 7 is a bar plot of diabetes_binary versus physical health used to uncrowd the graphs
+plot7 <- ggplot(diabetes_data, aes(x = PhysHlth)) + 
+  geom_bar(aes(color = Diabetes_binary, fill = Diabetes_binary)) + 
+  facet_wrap(~Diabetes_binary) + 
+  labs(title = "Bar Plot of Physical Health", x = "Days Active", y = "Participant Count") + 
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))
+print(plot7)  
+
+#Plot 8 is a bar plot of diabetes_binary versus income used to uncrowd the graphs
+plot8 <- ggplot(diabetes_data, aes(x = Income)) + 
+  geom_bar(aes(color = Diabetes_binary, fill = Diabetes_binary)) + 
+  facet_wrap(~Diabetes_binary) + 
+  labs(title = "Bar Plot of Income", x = "Income", y = "Frequency") + 
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))
+print(plot8)  
 ```
 
 # 5. Modeling
