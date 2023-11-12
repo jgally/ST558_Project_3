@@ -76,7 +76,8 @@ library(shiny)
 library(purrr)  
 library(randomForest)  
 library(gbm)  
-library(MLmetrics)  #For logLoss()
+library(MLmetrics)  #For logLoss()  
+library(rpart)  
 ```
 
 # 3. Data section
@@ -202,6 +203,11 @@ subset_data <- diabetes_data %>%
 
 # 4. Summarizations section
 
+Below is some initial exploratory data analysis on the dataset. We began
+with looking at group summaries of BMI and mental health. Both are
+grouped by the `Diabetes_binary` variable which sorts the participants
+into no diabetes, prediabetes, or diabetes.
+
 ``` r
 #gathering summary statistics of BMI  
 sum_data1 <- diabetes_data %>% 
@@ -237,6 +243,11 @@ print(sum_data2)
     ##   <fct>           <dbl> <dbl> <dbl> <dbl>
     ## 1 No Diabetes      2.98  7.11     0    30
     ## 2 Prediabetes      4.46  8.95     0    30
+
+After initial group summaries we then made several contingency tables in
+order to observe some of the possible relationships between variables.
+Based on these contingency tables we were able to numerically see where
+some trends might occur.
 
 ``` r
  #1-way contingency table
@@ -330,35 +341,102 @@ print(sum_data2)
     ##   Fair             3643        1369        0
     ##   Poor             1772         956        0
 
+We then looked at some additional combinations of variables in graphs to
+observe other relationships within the data. In these plots we are
+attempting to graph possible relationships between variables. If any
+trends are found it could give insight to which variables are important
+to use in our predictive modeling.
+
 ``` r
 #Violin plot
-ggplot(diabetes_data, aes(x = Sex, y = MentHlth)) +
+plot1 <- ggplot(diabetes_data, aes(x = Sex, y = MentHlth)) +
   geom_violin(fill = "lightblue", color = "blue", alpha = 0.7) +
   labs(title = "Mental health condition across gender", x = "Gender", y = "Mental health condition") +
-  theme_minimal()
+  theme_minimal() 
+print(plot1)
 ```
 
 ![](PredictiveModels_files/figure-gfm/Plots-1.png)<!-- -->
 
 ``` r
 #Bar plot
-ggplot(data = diabetes_data, aes(x = Age, y = PhysActivity , fill = Age)) +
+plot2 <- ggplot(data = diabetes_data, aes(x = Age, y = PhysActivity , fill = Age)) +
   geom_bar(stat = "identity") +
   labs(title = "Stacked Bar Plot of Physical activity days by Age Group", x = "Age Group", y = "Physical activity (days)") +
-  theme_minimal()
+  theme_minimal()  
+print(plot2)
 ```
 
 ![](PredictiveModels_files/figure-gfm/Plots-2.png)<!-- -->
 
 ``` r
 #Scatter plot
-ggplot(diabetes_data, aes(x = BMI, y = MentHlth)) +
+plot3 <- ggplot(diabetes_data, aes(x = BMI, y = MentHlth)) +
   geom_point(aes(color = Sex), size = 3) +
-  labs(title = "Scatterplot of BMI vs. Mental health", x = "BMI", y = "MentHlth") +
-  theme_minimal()
+  labs(title = "Scatterplot of BMI vs. Mental health", x = "BMI", y = "Mental Health") +
+  theme_minimal()  
+print(plot3)
 ```
 
 ![](PredictiveModels_files/figure-gfm/Plots-3.png)<!-- -->
+
+``` r
+#Plot 4 is a count plot of income versus mental health and color coded by the response variable of Diabetes_binary  
+plot4 <- ggplot(diabetes_data, aes(x = Income, y = MentHlth)) + 
+  geom_count(aes(color = Diabetes_binary)) + 
+  labs(title = "Count Plot of Income vs. Mental Health", x = "Income", y = "Mental Health") + 
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))
+print(plot4)
+```
+
+![](PredictiveModels_files/figure-gfm/Plots-4.png)<!-- -->
+
+``` r
+#Plot 5 is a count plot of income versus physical health and color coded by the response variable of Diabetes_binary  
+plot5 <- ggplot(diabetes_data, aes(x = Income, y = PhysHlth)) + 
+  geom_count(aes(color = Diabetes_binary)) + 
+  labs(title = "Count Plot of Income vs. Physical Health", x = "Income", y = "Physical Health") + 
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))
+print(plot5)
+```
+
+![](PredictiveModels_files/figure-gfm/Plots-5.png)<!-- -->
+
+``` r
+#Plot 6 is a bar plot of diabetes_binary versus mental health used to uncrowd the graphs
+plot6 <- ggplot(diabetes_data, aes(x = MentHlth)) + 
+  geom_bar(aes(color = Diabetes_binary, fill = Diabetes_binary)) + 
+  facet_wrap(~Diabetes_binary) + 
+  labs(title = "Bar Plot of Mental Health", x = "How Many Bad Mental Days", y = "Participant Count") + 
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))
+print(plot6)  
+```
+
+![](PredictiveModels_files/figure-gfm/Plots-6.png)<!-- -->
+
+``` r
+#Plot 7 is a bar plot of diabetes_binary versus physical health used to uncrowd the graphs
+plot7 <- ggplot(diabetes_data, aes(x = PhysHlth)) + 
+  geom_bar(aes(color = Diabetes_binary, fill = Diabetes_binary)) + 
+  facet_wrap(~Diabetes_binary) + 
+  labs(title = "Bar Plot of Physical Health", x = "Days Active", y = "Participant Count") + 
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))
+print(plot7)  
+```
+
+![](PredictiveModels_files/figure-gfm/Plots-7.png)<!-- -->
+
+``` r
+#Plot 8 is a bar plot of diabetes_binary versus income used to uncrowd the graphs
+plot8 <- ggplot(diabetes_data, aes(x = Income)) + 
+  geom_bar(aes(color = Diabetes_binary, fill = Diabetes_binary)) + 
+  facet_wrap(~Diabetes_binary) + 
+  labs(title = "Bar Plot of Income", x = "Income", y = "Frequency") + 
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))
+print(plot8)  
+```
+
+![](PredictiveModels_files/figure-gfm/Plots-8.png)<!-- -->
 
 # 5. Modeling
 
@@ -386,38 +464,41 @@ models where the responses are either 0 or 1. Log loss calculates the
 difference between the predicted probabilities and the actual values.
 The lower the log loss value, the better the fit of the model is to the
 data. Log loss is preferred with this data set because of our focus on
-the binary response of whether or not someone has diabetes. Log loss
-focuses on models that predict the class better and penalizes models
-that are further from the class.
+the binary response of diabetes. Our `Diabetes_binary` response variable
+has three responses of no diabetes, prediabetes, and diabetes; however,
+there seems to be no recorded response of the factor level of 2
+(diabetes) within the data so the recorded responses are either 0 or 1.
+Log loss is better than accuracy in this case because log loss focuses
+on models that predict the class better and penalizes models that are
+further from the class.
 
 ## *What a logistic regression is and why we apply it to this kind of data?*
 
 Logistic regression is a form of predictive analysis in which the
 regression models the relationship(s) of a binary response variable to
-one or more other variables. Logistic regression is similar to the use
-of linear regression except that logistic regression is used for
-classification problems, has a range of 0 to 1 like log loss, and does
-not require a linear relationship between the variables.
+one or more other variables. When backsolving the formula for logistic
+regression the function shows the logit/ log-odds of prediabetes is
+linear in the parameters.
 
 ## Fit 3 candidate logistic regression models and choose the best
 
 \#\`\`\`{r Three candidate logistic models} \# Model 1: Logistic
 Regression with default parameters \#model1 \<- glm(Diabetes_binary ~ .,
-data = training, family = binomial) \#y_pred1 \<- predict(model1,
+data = training, family = “binomial”) \#y_pred1 \<- predict(model1,
 newdata = testing, type = “response”) \#log_loss_model1 \<- logLoss(obs
 = testing\$Diabetes_binary, pred = y_pred1)
 
 # Model 2: Logistic Regression with different parameters (e.g., regularization)
 
 \#model2 \<- glm(Diabetes_binary ~ ., data = training, family =
-binomial, control = glm.control(alpha = 0.1)) \#y_pred2 \<-
+“binomial”, control = glm.control(alpha = 0.1)) \#y_pred2 \<-
 predict(model2, newdata = testing, type = “response”) \#log_loss_model2
 \<- logLoss(obs = testing\$Diabetes_binary, pred = y_pred2)
 
 # Model 3: Logistic Regression with more parameter variations
 
 \#model3 \<- glm(Diabetes_binary ~ ., data = training, family =
-binomial, control = glm.control(alpha = 1.0, weight = TRUE)) \#y_pred3
+“binomial”, control = glm.control(alpha = 1.0, weight = TRUE)) \#y_pred3
 \<- predict(model3, newdata = testing, type = “response”)
 \#log_loss_model3 \<- logLoss(obs = testing\$Diabetes_binary, pred =
 y_pred3)
@@ -467,8 +548,6 @@ Cross-validation is typically used to select the best complexity
 parameter.
 
 ## Fit a classification tree with varying values for the complexity parameter and choose the best model (best complexity parameter)
-
-library(rpart)
 
 # Fit a classification tree
 
