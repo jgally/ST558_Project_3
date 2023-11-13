@@ -67,15 +67,19 @@ the relationship between health, lifestyle, and diabetes risk.
 # 2. Required packages section
 
 ``` r
-library(readr)  
-library(dplyr)  
-library(ggplot2)  
-library(caret) 
-library(rmarkdown)
-library(shiny)
-library(purrr)  
-library(randomForest)  
-library(gbm)  
+library(readr)        #To read data
+library(dplyr)        #To clean data     
+library(ggplot2)      #To plot graphs
+library(caret)        #To model
+library(rmarkdown)    #To render .md files
+library(shiny)       
+library(purrr) 
+library(glmnet)
+library(randomForest)  #For randomForest model  
+library(gbm)           
+library(ModelMetrics)
+library(Metrics)
+library(cvms)
 library(MLmetrics)  #For logLoss()  
 library(rpart)  
 ```
@@ -250,7 +254,7 @@ Based on these contingency tables we were able to numerically see where
 some trends might occur.
 
 ``` r
- #1-way contingency table
+ #1 It is a 1-way contingency table that shows the frequency of respondents who consumed one or more fruits in their daily intake and those who did not consume any
  one_way_table <- table(diabetes_data$Fruits)
  one_way_table
 ```
@@ -260,7 +264,7 @@ some trends might occur.
     ##         92782        160898
 
 ``` r
- #2-way contingency table
+ #2 It is a 2-way contingency table that shows the number of respondents who smoke and have high cholesterol, those who smoke and do not have high cholesterol, as well as respondents who do not smoke and have high cholesterol, and those who do not smoke and do not have high cholesterol.
  two_way_table <- table(diabetes_data$Smoker, diabetes_data$HighChol)
  two_way_table
 ```
@@ -271,7 +275,7 @@ some trends might occur.
     ##   Yes               59056            53367
 
 ``` r
- #3-way contingency table
+ #3 It is a 3-way contingency table that shows the frequency of respondents who do not have high blood pressure and do not have high cholesterol, those who do not have high blood pressure and have high cholesterol, as well as respondents who have high blood pressure and do not have high cholesterol, and those who have high blood pressure and have high cholesterol. The data is presented separately for two groups: those with and without a history of heart disease or heart attacks.
  three_way_table <- table(diabetes_data$HighBP, diabetes_data$HighChol, diabetes_data$HeartDiseaseorAttack)
  three_way_table  
 ```
