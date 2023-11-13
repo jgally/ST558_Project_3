@@ -346,7 +346,7 @@ trends are found it could give insight to which variables are important
 to use in our predictive modeling.
 
 ``` r
-#Violin plot
+## Plot 1 is a **violin plot** that illustrates the distribution of the Mental Health variable across the two sex categories, female and male.
 plot1 <- ggplot(diabetes_data, aes(x = Sex, y = MentHlth)) +
   geom_violin(fill = "lightblue", color = "blue", alpha = 0.7) +
   labs(title = "Mental health condition across gender", x = "Gender", y = "Mental health condition") +
@@ -357,7 +357,7 @@ print(plot1)
 ![](PredictiveModels_files/figure-gfm/Plots-1.png)<!-- -->
 
 ``` r
-#Bar plot
+#Plot 2 is a **stacked bar plot** that depicts the distribution of the Physical Activity variable across all age groups, with each group represented by a different color.
 plot2 <- ggplot(data = diabetes_data, aes(x = Age, y = PhysActivity , fill = Age)) +
   geom_bar(stat = "identity") +
   labs(title = "Stacked Bar Plot of Physical activity days by Age Group", x = "Age Group", y = "Physical activity (days)") +
@@ -368,7 +368,7 @@ print(plot2)
 ![](PredictiveModels_files/figure-gfm/Plots-2.png)<!-- -->
 
 ``` r
-#Scatter plot
+#Plot 3 is a **scatter plot** designed to visualize the relationship between the Body Mass Index (BMI) and Mental Health variables, with points colored by sex (female and male)
 plot3 <- ggplot(diabetes_data, aes(x = BMI, y = MentHlth)) +
   geom_point(aes(color = Sex), size = 3) +
   labs(title = "Scatterplot of BMI vs. Mental health", x = "BMI", y = "Mental Health") +
@@ -379,7 +379,7 @@ print(plot3)
 ![](PredictiveModels_files/figure-gfm/Plots-3.png)<!-- -->
 
 ``` r
-#Plot 4 is a count plot of income versus mental health and color coded by the response variable of Diabetes_binary  
+#Plot 4 is a **count plot** of income versus mental health and color coded by the response variable of Diabetes_binary  
 plot4 <- ggplot(diabetes_data, aes(x = Income, y = MentHlth)) + 
   geom_count(aes(color = Diabetes_binary)) + 
   labs(title = "Count Plot of Income vs. Mental Health", x = "Income", y = "Mental Health") + 
@@ -390,7 +390,7 @@ print(plot4)
 ![](PredictiveModels_files/figure-gfm/Plots-4.png)<!-- -->
 
 ``` r
-#Plot 5 is a count plot of income versus physical health and color coded by the response variable of Diabetes_binary  
+#Plot 5 is a **count plot** of income versus physical health and color coded by the response variable of Diabetes_binary  
 plot5 <- ggplot(diabetes_data, aes(x = Income, y = PhysHlth)) + 
   geom_count(aes(color = Diabetes_binary)) + 
   labs(title = "Count Plot of Income vs. Physical Health", x = "Income", y = "Physical Health") + 
@@ -401,7 +401,7 @@ print(plot5)
 ![](PredictiveModels_files/figure-gfm/Plots-5.png)<!-- -->
 
 ``` r
-#Plot 6 is a bar plot of diabetes_binary versus mental health used to uncrowd the graphs
+#Plot 6 is a **bar plot** of diabetes_binary versus mental health used to uncrowd the graphs
 plot6 <- ggplot(diabetes_data, aes(x = MentHlth)) + 
   geom_bar(aes(color = Diabetes_binary, fill = Diabetes_binary)) + 
   facet_wrap(~Diabetes_binary) + 
@@ -413,7 +413,7 @@ print(plot6)
 ![](PredictiveModels_files/figure-gfm/Plots-6.png)<!-- -->
 
 ``` r
-#Plot 7 is a bar plot of diabetes_binary versus physical health used to uncrowd the graphs
+#Plot 7 is a **bar plot** of diabetes_binary versus physical health used to uncrowd the graphs
 plot7 <- ggplot(diabetes_data, aes(x = PhysHlth)) + 
   geom_bar(aes(color = Diabetes_binary, fill = Diabetes_binary)) + 
   facet_wrap(~Diabetes_binary) + 
@@ -425,7 +425,7 @@ print(plot7)
 ![](PredictiveModels_files/figure-gfm/Plots-7.png)<!-- -->
 
 ``` r
-#Plot 8 is a bar plot of diabetes_binary versus income used to uncrowd the graphs
+#Plot 8 is a **bar plot** of diabetes_binary versus income used to uncrowd the graphs
 plot8 <- ggplot(diabetes_data, aes(x = Income)) + 
   geom_bar(aes(color = Diabetes_binary, fill = Diabetes_binary)) + 
   facet_wrap(~Diabetes_binary) + 
