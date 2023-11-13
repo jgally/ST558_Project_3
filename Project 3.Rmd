@@ -3,8 +3,8 @@ title: "Project 3"
 author: "Jasmine Gallaway and Keren Vivas"
 date: "2023-10-30"
 output: github_document
-#params:
- #Education: "None/Elementary"
+params:
+ Education: "None/Elementary"
 ---
 
 ```{r setup, include=FALSE}
@@ -379,17 +379,17 @@ A random forest is an ensemble tree method of modeling. Random forest is similar
 ## Fit a random forest model and choose the best model
 ```{r}
 #setting control for the train control  
-#control <- trainControl(method = "cv", number = 5, classProbs = TRUE, summaryFunction = mnLogLoss)  
+control <- trainControl(method = "cv", number = 5, classProbs = TRUE, summaryFunction = mnLogLoss)  
 
 #Setting a better tuneGrid so the computation is not as long  
-#rf_grid <- expand.grid(.mtry = c(2, 4, 6))
+rf_grid <- expand.grid(.mtry = c(2, 4, 6))
 
 #Fitting a random forest model
 #rf_fit <- train(Diabetes_binary ~., data = training, 
-               # method = "rf", 
-               # trControl = control,
+                #method = "rf", 
+                #trControl = control,
                 #metric = "logLoss",
-                #tuneGrid = rf_grid,
+                #tuneGrid = expand.grid(.mtry = (4)),
                 #ntree = 100,) 
 
 #print(rf_fit)
@@ -434,14 +434,14 @@ Add answer
 ## X. Automation
 ```{r params set up}
 #Do it for 1 first and then all level of education
-#rmarkdown::render("Project 3.Rmd", out_put_file = "None_Elementary.html", params = list(Education = "None/Elementary"))
+#rmarkdown::render("Project 3.Rmd", out_put_file = "None_Elementary.md", params = list(Education = "None/Elementary"))
 
 #For all level of education
 #get unique education levels
 #Education_levels <- unique(diabetes_data$Education)
 
 #create filenames
-#output_file <- paste0(Education_levels, ".html")
+#output_file <- paste0(Education_levels, ".md")
 
 #create a list for each level of education with just the level name parameter
 #params = lapply(Education_levels, FUN = function(x){list(Education = x)})
@@ -450,9 +450,7 @@ Add answer
 #reports <- tibble(output_file, params)
 
 # knit
-#apply(reports, MARGIN = 1, FUN = function(x){ 
-# render(input = "Project 3.Rmd", output_file = x[[1]], params = x[[2]])
-#})
+#apply(reports, MARGIN = 1, FUN = function(x){render(input = "Project-3.Rmd", output_file = x[[1]], params = x[[2]])})
 ```
 
 End report! :)
