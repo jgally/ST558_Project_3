@@ -106,12 +106,12 @@ diabetes_data <- as_tibble(diabetes_data)
 #changing diabetes_binary to factor  
 diabetes_data$Diabetes_binary <- diabetes_data$Diabetes_binary %>% 
   factor(levels = c(0,1,2),
-         labels = c("No_Diabetes", "Prediabetes", "Diabetes"))  
+         labels = c("No", "Pre", "Yes"))  
 
 #combine education levels one and two  
 diabetes_data$Education <- diabetes_data$Education %>% 
   factor(levels = c(1,2,3,4,5,6), 
-            labels = c("None/Elementary", "None/Elementary", "Some High School", "High School Graduate", "Some College", "College Graduate"))  
+            labels = c("None/Elementary", "None/Elementary", "Some_High_School", "High_School_Graduate", "Some_College", "College_Graduate"))  
 
 #changing sex to factor  
 diabetes_data$Sex <- diabetes_data$Sex %>% 
@@ -126,7 +126,7 @@ diabetes_data$Age <- diabetes_data$Age %>%
 #Changing fruit to factor  
 diabetes_data$Fruits <- diabetes_data$Fruits %>% 
   factor(levels = c(0, 1),
-         labels = c("None", "Yes 1 or more"))  
+         labels = c("None", "Yes"))  
 
 #Changing physical activity to factor  
 diabetes_data$PhysActivity <- diabetes_data$PhysActivity %>% 
@@ -151,7 +151,7 @@ diabetes_data$HeartDiseaseorAttack <- diabetes_data$HeartDiseaseorAttack %>%
 #Changing veggies to factor  
 diabetes_data$Veggies <- diabetes_data$Veggies %>% 
   factor(levels = c(0, 1),
-         labels = c("None", "Yes 1 or more"))  
+         labels = c("None", "Yes"))  
 
 #Changing Heavy alcohol consumption to factor  
 diabetes_data$HvyAlcoholConsump <- diabetes_data$HvyAlcoholConsump %>% 
@@ -181,17 +181,17 @@ diabetes_data$DiffWalk <- diabetes_data$DiffWalk %>%
 #changing HighBP to factor
 diabetes_data$HighBP <- diabetes_data$HighBP %>%
   factor(levels = c(0, 1),
-         labels = c("No high BP", "High BP"))
+         labels = c("No", "Yes"))
 
 #changing HighChol to factor
 diabetes_data$HighChol <- diabetes_data$HighChol %>%
   factor(levels = c(0,1),
-         labels = c("No high cholesterol", "High cholesterol"))
+         labels = c("No", "Yes"))
 
 #changing CholCheck to factor
 diabetes_data$CholCheck <- diabetes_data$CholCheck %>%
   factor(levels = c(0,1),
-         labels = c("No check in 5 years", "Check in 5 years"))
+         labels = c("No", "Yes"))
 
 #changing Income to factor
 diabetes_data$Income <- diabetes_data$Income %>%
@@ -521,60 +521,121 @@ best_model_index, “with a log loss of”, best_log_loss, “”) \#\`\`\`
 
 ## *What a LASSO logistic regression model is and why we might try to use this over basic logistic regresion?*
 
-LASSO (Least Absolute Shrinkage and Selection Operator) is a type of
-regularized logistic regression. It adds a penalty term to the logistic
-regression’s likelihood function to encourage feature selection by
-driving some coefficients to exactly zero. This can improve model
-interpretability and reduce overfitting and that is why it is used over
-the basic logistic regresion.
+LASSO (Least Absolute Shrinkage and Selection Operator) is a type of regularized logistic regression. It adds a penalty term to the logistic regression's likelihood function to encourage feature selection by driving some coefficients to exactly zero. This can improve model interpretability and reduce overfitting and that is why it is used over the basic logistic regresion.
 
-LASSO logistic regression is a valuable tool when you have
-high-dimensional datasets with potentially redundant or irrelevant
-features. It can improve model performance, reduce overfitting, and
-enhance model interpretability by automatically selecting the most
-relevant predictors while eliminating the least important ones. However,
-the choice between basic logistic regression and LASSO logistic
-regression depends on the specific characteristics of your data and the
-goals of your analysis
+LASSO logistic regression is a valuable tool when you have high-dimensional datasets with potentially redundant or irrelevant features. It can improve model performance, reduce overfitting, and enhance model interpretability by automatically selecting the most relevant predictors while eliminating the least important ones. However, the choice between basic logistic regression and LASSO logistic regression depends on the specific characteristics of your data and the goals of your analysis.
 
 ## Fit a LASSO logistic regression model and choose the best model
 
-\#model_lasso \<- train(Diabetes_binary ~ ., data = training_data,
-method = “glmnet”, \# trControl = trainControl(method = “cv”, number =
-5), \# tuneGrid = expand.grid(alpha = 1, lambda = seq(0.001, 1, by =
-0.001)))
+```{r}
+#Dropping unused level
+training$Diabetes_binary <- droplevels(training$Diabetes_binary)
+testing$Diabetes_binary <- droplevels(testing$Diabetes_binary)
 
-## *what a classification tree model is and why we might try to use it?*
+levels(training$Diabetes_binary) <- c("No", "Yes")
+levels(testing$Diabetes_binary) <- c("No", "Yes")
 
-A classification tree is a decision tree that is used for classification
-tasks. It recursively splits the data into subsets based on the
-predictors and their values to make predictions. Different values of the
-complexity parameter control the tree’s depth and complexity.
-Cross-validation is typically used to select the best complexity
-parameter.
+training <- training[1:250,]
+
+#Setting control for the train control  
+control <- trainControl(method = "cv", number = 5, classProbs = TRUE, summaryFunction = mnLogLoss)
+
+#Fitting a LASSO logistic regression model 
+model_lasso <- train(Diabetes_binary ~ Sex + Income + Age + BMI + MentHlth + PhysHlth + HighBP + Fruits + HvyAlcoholConsump + NoDocbcCost,
+  data = training,
+  method = "glmnet",
+  trControl =control,
+  tuneGrid = expand.grid(alpha = 1, lambda = seq(0.001, 1, length = 100))
+)
+
+#Predict
+pred_model_lasso <- predict(model_lasso, newdata = testing, type = "prob")
+
+# LogLoss function with explicit conversion to numeric
+LogLoss <- function(actual, predicted) {
+  predicted_numeric <- as.numeric(as.character(predicted))  # Convert factor to numeric
+  result <- -1 / length(actual) * sum((actual * log(predicted_numeric) + (1 - actual) * log(1 - predicted_numeric)))
+  return(result)
+}
+
+# Calculate log loss on the testing set
+test_logloss <- LogLoss(testing$Diabetes_binary, pred_model_lasso)
+
+# Display the log loss on the testing set
+cat("Log Loss on Testing Set:", test_logloss, "\n")
+```
+
+## _what a classification tree model is and why we might try to use it?_
+
+A classification tree, specifically known as a decision tree for classification, is a model designed for classifying data. It recursively divides the input space into regions, assigning a class label to each region. The decision-making process is visualized as a tree structure, where internal nodes represent decisions based on specific features, branches depict the outcomes of those decisions, and leaf nodes contain the final predicted classes. The construction of a classification tree involves selecting optimal features to split the data at each internal node, with the process continuing until a stopping criterion is met, such as a maximum tree depth or a minimum number of samples in a leaf node. The tree's depth and complexity are controlled by different values of the complexity parameter, typically determined through cross-validation to select the best parameter.
+
+We might choose to use a classification tree for several reasons. It offers benefits such as excellent interpretability, no assumption of linearity, handling of both numeric and non-numeric data, automatic variable selection, insensitivity to feature scale, robustness to outliers, suitability for imbalanced data, and its role as a building block for ensemble methods, enhancing predictive performance.
 
 ## Fit a classification tree with varying values for the complexity parameter and choose the best model (best complexity parameter)
 
-# Fit a classification tree
+```{r}
+#Set seed for reproducibility
+set.seed(123)
 
-\#tree_model \<- rpart(Diabetes_binary ~ ., data = training_data, method
-= “class”)
+# Create 5-fold cross-validation indices
+folds <- createFolds(training$Diabetes_binary, k = 5, list = TRUE, returnTrain = FALSE)
 
-# Define the control parameters for the rpart function
+# Create a grid of complexity parameter values to try
+cp_values <- seq(0.01, 0.1, by = 0.01)
 
-\#ctrl \<- rpart.control(cp = 0.01) \# Start with a small value for cp
+# Create a data frame to store log loss for each complexity parameter
+logloss_df <- data.frame(cp = numeric(length(cp_values)), logloss = numeric(length(cp_values)))
 
-# Fit the tree with cross-validation and find the best cp value
+# Loop through different complexity parameters
+for (i in seq_along(cp_values)) {
+  avg_logloss <- 0
+  
+  # Perform 5-fold cross-validation
+  for (fold in seq_along(folds)) {
+    # Extract training and validation sets
+    training_set <- training[-folds[[fold]], ]
+    validation_set <- training[folds[[fold]], ]
+    
+    # Build the classification tree on the training set
+    tree_model <- rpart(Diabetes_binary ~ ., data = training_set, method = "class", control = rpart.control(cp = cp_values[i]))
+    
+    # Make predictions on the validation set
+    predictions <- predict(tree_model, newdata = validation_set, type = "prob")[, 2]
+    
+    # Calculate log loss on the validation set
+    fold_logloss <- logLoss(as.numeric(validation_set$Diabetes_binary) - 1, predictions)
+    
+    avg_logloss <- avg_logloss + fold_logloss
+  }
+  
+  # Calculate average log loss over all folds
+  avg_logloss <- avg_logloss / length(folds)
+  
+  # Store average log loss in the data frame
+  logloss_df[i, ] <- c(cp = cp_values[i], logloss = avg_logloss)
+}
 
-\#cv_tree_model \<- rpart(Diabetes_binary ~ ., data = training_data,
-method = “class”, control = ctrl)
+# Find the best complexity parameter with the minimum average log loss
+best_cp <- logloss_df$cp[which.min(logloss_df$logloss)]
 
-# Print the complexity parameter table
+# Build the final classification tree with the best complexity parameter
+final_tree_model <- rpart(Diabetes_binary ~ ., data = training, method = "class", control = rpart.control(cp = best_cp))
 
-\#printcp(cv_tree_model)
+# Display the best complexity parameter
+cat("Best Complexity Parameter:", best_cp, "\n")
 
-\#Prune the tree \#best_tree_model \<- prune(cv_tree_model, cp =
-best_cp_value)
+# Display the final tree
+print(final_tree_model)
+
+# Evaluate the final model on the testing set
+test_predictions <- predict(final_tree_model, newdata = testing, type = "prob")[, 2]
+
+# Calculate log loss on the testing set
+test_logloss <- logLoss(as.numeric(testing$Diabetes_binary) - 1, test_predictions)
+
+# Display the log loss on the testing set
+cat("Log Loss on Testing Set:", test_logloss, "\n")
+```
 
 ## *what a random forest is and why we might use it instead of a basic classification tree?*
 
