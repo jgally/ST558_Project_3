@@ -207,10 +207,7 @@ subset_data <- diabetes_data %>%
 
 # 4. Summarizations section
 
-Below is some initial exploratory data analysis on the dataset. We began
-with looking at group summaries of BMI and mental health. Both are
-grouped by the `Diabetes_binary` variable which sorts the participants
-into no diabetes, prediabetes, or diabetes.
+Below is some initial exploratory data analysis on the dataset. We began with looking at group summaries of BMI and mental health. Both are grouped by the `Diabetes_binary` variable which sorts the participants into no diabetes, prediabetes, or diabetes.
 
 ``` r
 #gathering summary statistics of BMI  
@@ -248,10 +245,7 @@ print(sum_data2)
     ## 1 No_Diabetes      2.98  7.11     0    30
     ## 2 Prediabetes      4.46  8.95     0    30
 
-After initial group summaries we then made several contingency tables in
-order to observe some of the possible relationships between variables.
-Based on these contingency tables we were able to numerically see where
-some trends might occur.
+After initial group summaries we then made several contingency tables in order to observe some of the possible relationships between variables. Based on these contingency tables we were able to numerically see where some trends might occur.
 
 ``` r
  #1 It is a 1-way contingency table that shows the frequency of respondents who consumed one or more fruits in their daily intake and those who did not consume any
