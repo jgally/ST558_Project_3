@@ -88,9 +88,9 @@ diabetes_data <- read_csv("diabetes_binary_health_indicators_BRFSS2015.csv")
 ```
 
     ## Rows: 253680 Columns: 22
-    ## ── Column specification ────────────────────────────────────────────────────────────────────────────────────────
+    ## ── Column specification ───────────────────────────────────────────────────────────────────────────────────────────────────────────────
     ## Delimiter: ","
-    ## dbl (22): Diabetes_binary, HighBP, HighChol, CholCheck, BMI, Smoker, Stroke, HeartDiseaseorAttack, PhysActiv...
+    ## dbl (22): Diabetes_binary, HighBP, HighChol, CholCheck, BMI, Smoker, Stroke, HeartDiseaseorAttack, PhysActivity, Fruits, Veggies, H...
     ## 
     ## ℹ Use `spec()` to retrieve the full column specification for this data.
     ## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
@@ -102,7 +102,7 @@ diabetes_data <- as_tibble(diabetes_data)
 #changing diabetes_binary to factor  
 diabetes_data$Diabetes_binary <- diabetes_data$Diabetes_binary %>% 
   factor(levels = c(0,1,2),
-         labels = c("No Diabetes", "Prediabetes", "Diabetes"))  
+         labels = c("No_Diabetes", "Prediabetes", "Diabetes"))  
 
 #combine education levels one and two  
 diabetes_data$Education <- diabetes_data$Education %>% 
@@ -224,7 +224,7 @@ print(sum_data1)
     ## # A tibble: 2 × 6
     ##   Diabetes_binary  mean    sd   min   max   IQR
     ##   <fct>           <dbl> <dbl> <dbl> <dbl> <dbl>
-    ## 1 No Diabetes      27.8  6.29    12    98     7
+    ## 1 No_Diabetes      27.8  6.29    12    98     7
     ## 2 Prediabetes      31.9  7.36    13    98     8
 
 ``` r
@@ -241,7 +241,7 @@ print(sum_data2)
     ## # A tibble: 2 × 5
     ##   Diabetes_binary  mean    sd   min   max
     ##   <fct>           <dbl> <dbl> <dbl> <dbl>
-    ## 1 No Diabetes      2.98  7.11     0    30
+    ## 1 No_Diabetes      2.98  7.11     0    30
     ## 2 Prediabetes      4.46  8.95     0    30
 
 After initial group summaries we then made several contingency tables in
@@ -297,7 +297,7 @@ some trends might occur.
 ```
 
     ##      
-    ##       No Diabetes Prediabetes Diabetes
+    ##       No_Diabetes Prediabetes Diabetes
     ##   No       200722       31604        0
     ##   Yes       17612        3742        0
 
@@ -308,7 +308,7 @@ some trends might occur.
 ```
 
     ##            
-    ##             No Diabetes Prediabetes Diabetes
+    ##             No_Diabetes Prediabetes Diabetes
     ##   Excellent       44159        1140        0
     ##   Very Good       82703        6381        0
     ##   Good            62189       13457        0
@@ -324,7 +324,7 @@ some trends might occur.
     ## , ,  = No
     ## 
     ##            
-    ##             No Diabetes Prediabetes Diabetes
+    ##             No_Diabetes Prediabetes Diabetes
     ##   Excellent       42402        1086        0
     ##   Very Good       78238        6089        0
     ##   Good            56214       12386        0
@@ -334,7 +334,7 @@ some trends might occur.
     ## , ,  = Yes
     ## 
     ##            
-    ##             No Diabetes Prediabetes Diabetes
+    ##             No_Diabetes Prediabetes Diabetes
     ##   Excellent        1757          54        0
     ##   Very Good        4465         292        0
     ##   Good             5975        1071        0
@@ -444,14 +444,22 @@ Selected variables Sex, Income, Age, BMI, MentHlth, PhysHlth, HighBP,
 Fruits, HvyAlcoholConsu, NoDocbcCost
 
 ``` r
-set.seed(3033)
-intrain <- createDataPartition(y = diabetes_data$Diabetes_binary, p= 0.7, list = FALSE)
-```
+#Turning all diabetes responses to NA
+diabetes_data$Diabetes_binary[diabetes_data$Diabetes_binary == "Diabetes"] <- NA  
 
-    ## Warning in createDataPartition(y = diabetes_data$Diabetes_binary, p = 0.7, : Some classes have no records (
-    ## Diabetes ) and these will be ignored
+#Dropping level
+diabetes_data$Diabetes_binary <- droplevels(diabetes_data$Diabetes_binary)  
 
-``` r
+#Dropping all NA responses
+training <- diabetes_data[complete.cases(diabetes_data),]  
+
+#Setting seed for reproducibility
+set.seed(3033)  
+
+#Splitting the data  
+intrain <- createDataPartition(y = diabetes_data$Diabetes_binary, p= 0.7, list = FALSE)  
+
+#Saving the splits  
 training <- diabetes_data[intrain,]
 testing <- diabetes_data[-intrain,]
 ```
@@ -580,7 +588,31 @@ classification tree does.
 
 ## Fit a random forest model and choose the best model
 
-Add answer
+``` r
+#setting control for the train control  
+#control <- trainControl(method = "cv", number = 5, classProbs = TRUE, summaryFunction = mnLogLoss)  
+
+#Setting a better tuneGrid so the computation is not as long  
+#rf_grid <- expand.grid(.mtry = c(2, 4, 6))
+
+#Fitting a random forest model
+#rf_fit <- train(Diabetes_binary ~., data = training, 
+               # method = "rf", 
+               # trControl = control,
+                #metric = "logLoss",
+                #tuneGrid = rf_grid,
+                #ntree = 100,) 
+
+#print(rf_fit)
+
+#Fitting to the testing dataset  
+#rfPred <- predict(rf_fit, newdata = dplyr::select(test, -Diabetes_binary))  
+
+#Saving a summary statistic of MSE for the randomForest  
+#rfMSE <- sqrt(mean(()))
+
+#summary(rf_fit)
+```
 
 ## Two models thast was not done in class
 

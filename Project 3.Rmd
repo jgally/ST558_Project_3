@@ -57,7 +57,7 @@ diabetes_data <- as_tibble(diabetes_data)
 #changing diabetes_binary to factor  
 diabetes_data$Diabetes_binary <- diabetes_data$Diabetes_binary %>% 
   factor(levels = c(0,1,2),
-         labels = c("No Diabetes", "Prediabetes", "Diabetes"))  
+         labels = c("No_Diabetes", "Prediabetes", "Diabetes"))  
 
 #combine education levels one and two  
 diabetes_data$Education <- diabetes_data$Education %>% 
@@ -378,16 +378,29 @@ A random forest is an ensemble tree method of modeling. Random forest is similar
 
 ## Fit a random forest model and choose the best model
 ```{r}
+#setting control for the train control  
+#control <- trainControl(method = "cv", number = 5, classProbs = TRUE, summaryFunction = mnLogLoss)  
+
+#Setting a better tuneGrid so the computation is not as long  
+#rf_grid <- expand.grid(.mtry = c(2, 4, 6))
+
 #Fitting a random forest model
-rf_fit <- randomForest(Diabetes_binary ~., data = training, mtry = (sqrt(ncol(training))), ntree = 10, importance = TRUE)  
+#rf_fit <- train(Diabetes_binary ~., data = training, 
+               # method = "rf", 
+               # trControl = control,
+                #metric = "logLoss",
+                #tuneGrid = rf_grid,
+                #ntree = 100,) 
+
+#print(rf_fit)
 
 #Fitting to the testing dataset  
-rfPred <- predict(rf_fit, newdata = dplyr::select(test, -Diabetes_binary))  
+#rfPred <- predict(rf_fit, newdata = dplyr::select(test, -Diabetes_binary))  
 
 #Saving a summary statistic of MSE for the randomForest  
-rfMSE <- sqrt(mean(()))
+#rfMSE <- sqrt(mean(()))
 
-summary(rf_fit)
+#summary(rf_fit)
 ```
 ## Two models thast was not done in class
 
