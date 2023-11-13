@@ -303,38 +303,61 @@ Logarithmic loss is metric used to evaluate how well a model fits. Also known as
 
 ## _What a logistic regression is and why we apply it to this kind of data?_
 
-Logistic regression is a form of predictive analysis in which the regression models the relationship(s) of a binary response variable to one or more other variables. When backsolving the formula for logistic regression the function shows the logit/ log-odds of prediabetes is linear in the parameters.
+Logistic regression is a form of predictive analysis in which the regression models the relationship(s) of a binary response variable to one or more other variables. Typically we think of linear regression models, but generalized linear models, such as logistic regression, are used in cases in which the general assumptions of linear models are broken. The general assumptions of a linear model are that the model is for a continuous response, errors are normally distributed, and that constant variance can be assumed. In this case our `Diabetes_binary` variable could do well being modeled by logistic regression. In our data `Diabetes_binary` has two recorded responses of either 0 "No diabetes" or 1 "Prediabetes"; this is not a continuous response and therefore a general linear model cannot be used.  A typical logistic function can be backsolved to result in showing what is called a link function. The link function shows how a linear model could be fit to our response variable. The link function of logistic regression is called the logit function and models the log odds of success. The log odds of success is the probability that the success (or 1 response) will occur. In this scenario it feels wrong to call prediabetes a success; however, we will satistically still consider 1 "Prediabetes" to be the success.  
 
 ## Fit  3 candidate logistic regression models and choose the best
-#```{r Three candidate logistic models}
+```{r Three candidate logistic models}
+#Setting trainControl to include cv  
+my_ctrl <- trainControl(method = "cv", number = 5, classProbs = TRUE, summaryFunction = mnLogLoss)
+
 # Model 1: Logistic Regression with default parameters
-#model1 <- glm(Diabetes_binary ~ ., data = training, family = "binomial")
-#y_pred1 <- predict(model1, newdata = testing, type = "response")
-#log_loss_model1 <- logLoss(obs = testing$Diabetes_binary, pred = y_pred1)
+model1 <- train(Diabetes_binary ~., data = training, 
+                method = "glm", 
+                trControl = my_ctrl,
+                metric = "logLoss",
+                family = binomial(link = "logit"))  
+
+#Observing Summaries  
+model1  
+model1$finalModel  
+summary(model1)  
+
+#Predictions with testing  
+y_pred1 <- predict(model1, newdata = testing, type = "response")  
+
 
 # Model 2: Logistic Regression with different parameters (e.g., regularization)
-#model2 <- glm(Diabetes_binary ~ ., data = training, family = "binomial", control = glm.control(alpha = 0.1))
-#y_pred2 <- predict(model2, newdata = testing, type = "response")
-#log_loss_model2 <- logLoss(obs = testing$Diabetes_binary, pred = y_pred2)
+model2 <- train(Diabetes_binary ~ Age*PhysActivity, data = training, 
+                method = "glm", 
+                trControl = my_ctrl,
+                metric = "logLoss",
+                family = binomial(link = "logit"))  
+
+#Observing Summaries  
+model2  
+model2$finalModel  
+summary(model2)  
+
+#Predictions with testing  
+y_pred2 <- predict(model2, newdata = testing, type = "response")
+
 
 # Model 3: Logistic Regression with more parameter variations
-#model3 <- glm(Diabetes_binary ~ ., data = training, family = "binomial", control = glm.control(alpha = 1.0, weight = TRUE))
-#y_pred3 <- predict(model3, newdata = testing, type = "response")
-#log_loss_model3 <- logLoss(obs = testing$Diabetes_binary, pred = y_pred3)
+model3 <- train(Diabetes_binary ~ Age + PhysActivity + HvyAlcoholConsump + Fruits, data = training, 
+                method = "glm", 
+                trControl = my_ctrl,
+                metric = "logLoss",
+                family = binomial(link = "logit"))  
 
-# Choose the model with the lowest log loss
-#log_loss_values <- c(log_loss_model1, log_loss_model2, log_loss_model3)
-#best_model_index <- which.min(log_loss_values)
+#Observing Summaries  
+model3  
+model3$finalModel  
+summary(model3)  
 
-#best_model <- switch(
-#  best_model_index,
-#  model1 = model1,
-#  model2 = model2,
-#  model3 = model3
-#)
-#best_log_loss <- log_loss_values[best_model_index]
-#cat("The best model is Model", best_model_index, "with a log loss of", best_log_loss, "\n")
-#```
+#Predictions with testing  
+y_pred3 <- predict(model3, newdata = testing, type = "response")
+
+```
 
 ## _What a LASSO logistic regression model is and why we might try to use this over basic logistic regresion?_
 
