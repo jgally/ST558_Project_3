@@ -277,9 +277,23 @@ print(plot8)
 Selected variables
 Sex, Income, Age, BMI, MentHlth, PhysHlth, HighBP, Fruits, HvyAlcoholConsu, NoDocbcCost
 
-```{r Split data}
-set.seed(3033)
-intrain <- createDataPartition(y = diabetes_data$Diabetes_binary, p= 0.7, list = FALSE)
+```{r Split data} 
+#Turning all diabetes responses to NA
+diabetes_data$Diabetes_binary[diabetes_data$Diabetes_binary == "Diabetes"] <- NA  
+
+#Dropping level
+diabetes_data$Diabetes_binary <- droplevels(diabetes_data$Diabetes_binary)  
+
+#Dropping all NA responses
+training <- diabetes_data[complete.cases(diabetes_data),]  
+
+#Setting seed for reproducibility
+set.seed(3033)  
+
+#Splitting the data  
+intrain <- createDataPartition(y = diabetes_data$Diabetes_binary, p= 0.7, list = FALSE)  
+
+#Saving the splits  
 training <- diabetes_data[intrain,]
 testing <- diabetes_data[-intrain,]
 ```
@@ -363,9 +377,18 @@ A classification tree is a decision tree that is used for classification tasks. 
 A random forest is an ensemble tree method of modeling. Random forest is similar to the bagging method of modeling except that a random forest does not use all the variables/predictors. A random forest uses a subset of predictors which reduces variance better than bagging or a basic classification tree does. 
 
 ## Fit a random forest model and choose the best model
+```{r}
+#Fitting a random forest model
+rf_fit <- randomForest(Diabetes_binary ~., data = training, mtry = (sqrt(ncol(training))), ntree = 10, importance = TRUE)  
 
-Add answer
+#Fitting to the testing dataset  
+rfPred <- predict(rf_fit, newdata = dplyr::select(test, -Diabetes_binary))  
 
+#Saving a summary statistic of MSE for the randomForest  
+rfMSE <- sqrt(mean(()))
+
+summary(rf_fit)
+```
 ## Two models thast was not done in class
 
 Model 1: Add answer
