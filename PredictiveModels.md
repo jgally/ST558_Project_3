@@ -597,7 +597,7 @@ for (i in seq_along(cp_values)) {
     validation_set <- training[folds[[fold]], ]
     
     # Build the classification tree on the training set
-    tree_model <- rpart(Diabetes_binary ~ ., data = training_set, method = "class", control = rpart.control(cp = cp_values[i]))
+    tree_model <- rpart(Diabetes_binary ~ Sex + Income + Age + BMI + MentHlth + PhysHlth + HighBP + Fruits + HvyAlcoholConsump + NoDocbcCost, data = training_set, method = "class", control = rpart.control(cp = cp_values[i]))
     
     # Make predictions on the validation set
     predictions <- predict(tree_model, newdata = validation_set, type = "prob")[, 2]
@@ -619,7 +619,7 @@ for (i in seq_along(cp_values)) {
 best_cp <- logloss_df$cp[which.min(logloss_df$logloss)]
 
 # Build the final classification tree with the best complexity parameter
-final_tree_model <- rpart(Diabetes_binary ~ ., data = training, method = "class", control = rpart.control(cp = best_cp))
+final_tree_model <- rpart(Diabetes_binary ~ Sex + Income + Age + BMI + MentHlth + PhysHlth + HighBP + Fruits + HvyAlcoholConsump + NoDocbcCost, data = training, method = "class", control = rpart.control(cp = best_cp))
 
 # Display the best complexity parameter
 cat("Best Complexity Parameter:", best_cp, "\n")
@@ -675,15 +675,47 @@ classification tree does.
 
 ## Two models thast was not done in class
 
-Model 1: Add answer Model 2: Add answer
+Model 1: Bagged cart model 
+Model 2: Add answer
 
 ## What the Model 1 is?
 
-Add answer
+A bagged CART (Bootstrap Aggregating for Classification and Regression Trees) model is an ensemble machine learning technique aimed at enhancing predictive model stability and accuracy while mitigating overfitting. The process involves creating multiple bootstrap samples from the original dataset by randomly selecting data points with replacement. Each bootstrap sample is used to train an independent CART model (decision tree). The predictions from all individual trees are then combined to form the final ensemble prediction. For classification tasks, the mode of predictions is often used, while the average is employed for regression problems. Bagging creates diversity in the models by training them on different subsets of the data, making the ensemble more robust and less prone to overfitting.
 
 ## Fit a Model 1 and choose the best model
 
-Add answer
+```{r}
+#Dropping unused level
+training$Diabetes_binary <- droplevels(training$Diabetes_binary)
+testing$Diabetes_binary <- droplevels(testing$Diabetes_binary)
+
+levels(training$Diabetes_binary) <- c("No", "Yes")
+levels(testing$Diabetes_binary) <- c("No", "Yes")
+
+training <- training[1:250,]
+
+#Setting control for the train control  
+control <- trainControl(method = "cv", number = 5, classProbs = TRUE, summaryFunction = mnLogLoss)
+
+# Fit a bagged model (using bagged trees) on the training data
+model_bagged <- train(Diabetes_binary ~ Sex + Income + Age + BMI + MentHlth + PhysHlth + HighBP + Fruits + HvyAlcoholConsump + NoDocbcCost, data = training, method = "treebag", trControl = control)
+
+# Predict probabilities on the testing set
+pred_probabilities <- predict(model_bagged, newdata = testing, type = "prob")
+
+# LogLoss function with explicit conversion to numeric
+LogLoss <- function(actual, predicted) {
+  predicted_numeric <- as.numeric(as.character(predicted))  # Convert factor to numeric
+  result <- -1 / length(actual) * sum((actual * log(predicted_numeric) + (1 - actual) * log(1 - predicted_numeric)))
+  return(result)
+}
+
+# Calculate log loss on the testing set
+test_logloss <- LogLoss(testing$Diabetes_binary, pred_probabilities)
+
+# Display the log loss on the testing set
+cat("Log Loss on Testing Set:", test_logloss, "\n")
+```
 
 ## What the Model 2 is?
 
