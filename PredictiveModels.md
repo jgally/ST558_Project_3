@@ -675,14 +675,14 @@ classification tree does.
 
 ## Two models thast was not done in class
 
-Model 1: Bagged cart model 
+Model 1: Bagged cart model  
 Model 2: Add answer
 
-## What the Model 1 is?
+## What a bagged CART model is?
 
 A bagged CART (Bootstrap Aggregating for Classification and Regression Trees) model is an ensemble machine learning technique aimed at enhancing predictive model stability and accuracy while mitigating overfitting. The process involves creating multiple bootstrap samples from the original dataset by randomly selecting data points with replacement. Each bootstrap sample is used to train an independent CART model (decision tree). The predictions from all individual trees are then combined to form the final ensemble prediction. For classification tasks, the mode of predictions is often used, while the average is employed for regression problems. Bagging creates diversity in the models by training them on different subsets of the data, making the ensemble more robust and less prone to overfitting.
 
-## Fit a Model 1 and choose the best model
+## Fit a bagged CART model and choose the best model
 
 ```{r}
 #Dropping unused level
