@@ -149,6 +149,9 @@ diabetes_data$Income <- diabetes_data$Income %>%
   factor(levels = c(1,2,3,4,5,6,7,8),
          labels = c("Less than $10k", "$10k to less than $15k", "$15kto less than $20k", "$20k to less than $25k", "$25k to less than $35k", "$35k to less than $50k", "$50k to less than $75k", "$75k or more"))
 ``` 
+
+Below our data set is subset into the specified education level for the page.  
+
 ```{r filter data for the specified education level}
 # Subset data into a single Education level
 subset_data <- diabetes_data %>%
@@ -273,9 +276,10 @@ plot8 <- ggplot(diabetes_data, aes(x = Income)) +
 print(plot8)  
 ```
 
-# 5. Modeling
-Selected variables
-Sex, Income, Age, BMI, MentHlth, PhysHlth, HighBP, Fruits, HvyAlcoholConsu, NoDocbcCost
+# 5. Modeling  
+
+Below begins the work to shift into modeling our data. We had some initial issues with modeling due to our labeling of the variables. We also had some modeling issues due to there being no recorded responses of 2 / "Diabetes" within the `Diabetes_binary` dataset. Due to this lack of response, the "Diabetes" level of `Diabetes_binary` had to be removed in order for the models to work. The code chunk directly below removes that factor level. Some of the variables we arbitrarily chose to focus on in our modeling are Sex, Income, Age, BMI, MentHlth, PhysHlth, HighBP, Fruits, HvyAlcoholConsump, and NodocbcCost. Variable selection can be done with penalization modeling such as LASSO.
+
 
 ```{r Split data} 
 #Turning all diabetes responses to NA
@@ -320,11 +324,7 @@ model1 <- train(Diabetes_binary ~., data = training,
 #Observing Summaries  
 model1  
 model1$finalModel  
-summary(model1)  
-
-#Predictions with testing  
-y_pred1 <- predict(model1, newdata = testing, type = "response")  
-
+summary(model1)   
 
 # Model 2: Logistic Regression with different parameters (e.g., regularization)
 model2 <- train(Diabetes_binary ~ Age*PhysActivity, data = training, 
@@ -354,8 +354,17 @@ model3
 model3$finalModel  
 summary(model3)  
 
-#Predictions with testing  
-y_pred3 <- predict(model3, newdata = testing, type = "response")
+#Prediction for model 1 with testing data  
+y_pred1 <- predict(model1, newdata = testing, type = "response")  
+
+#Predictions for model 2 with testing data  
+y_pred2 <- predict(model2, newdata = testing, type = "response")  
+
+#Predictions for model 3 with testing data    
+y_pred3 <- predict(model3, newdata = testing, type = "response")  
+
+#Making a table to compare the logLoss metric values and pick the smallest value  
+comparing <- c(y_pred1, y_pred2, y_pred3)
 
 ```
 
@@ -397,7 +406,7 @@ A classification tree is a decision tree that is used for classification tasks. 
 
 ## _what a random forest is and why we might use it instead of a basic classification tree?_
 
-A random forest is an ensemble tree method of modeling. Random forest is similar to the bagging method of modeling except that a random forest does not use all the variables/predictors. A random forest uses a subset of predictors which reduces variance better than bagging or a basic classification tree does. 
+A random forest is another ensemble method of modeling. Random forests are similar to bagging in that both take bootstrapping samples from the data to build multiple trees. After repeat sampling and tree building, these ensemble tree building models can take the average or majority classification as their prediction. With our data being a classification problem, our random forest would take the class predicted by moajority of the trees it builds. Building many trees and then taking the average or majority vote decreases the variance that a basic classification tree would have which makes the ensemble methods the preferred model when prediction is the focus. Random forests differ from bagging as they take in a subset of the variables rather than using all of them for prediction. This subset increases bias, but also can decrease variance. 
 
 ## Fit a random forest model and choose the best model
 ```{r}
@@ -408,12 +417,11 @@ control <- trainControl(method = "cv", number = 5, classProbs = TRUE, summaryFun
 rf_grid <- expand.grid(.mtry = c(2, 4, 6))
 
 #Fitting a random forest model
-#rf_fit <- train(Diabetes_binary ~., data = training, 
+#rf_fit <- train(Diabetes_binary ~ Sex + HvyAlcoholConsump + NoDocbcCost, data = training, 
                 #method = "rf", 
                 #trControl = control,
                 #metric = "logLoss",
-                #tuneGrid = expand.grid(.mtry = (4)),
-                #ntree = 100,) 
+                #tuneGrid = expand.grid(mtry = 1:3)) 
 
 #print(rf_fit)
 
