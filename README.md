@@ -37,6 +37,8 @@ library(cvms)
 
 library(rpart)  
 
+library(pls)
+
 
 
 ## Automation code of different education level .md files 

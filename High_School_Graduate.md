@@ -3,8 +3,10 @@ Project 3
 Jasmine Gallaway and Keren Vivas
 2023-10-30
 
-\#`{r setup, include=FALSE} #knitr::opts_chunk$set(echo = TRUE) #` \# 1.
-Introduction section
+\#\`\`{r setup, include=FALSE} \#knitr::opts_chunk\$set(warning = FALSE,
+message = FALSE) \#\`\`\`
+
+# 1. Introduction section
 
 The data analyzed in this report is derived from the Diabetes Health
 Indicators Dataset, which was gathered through the Behavioral Risk
@@ -68,6 +70,7 @@ the relationship between health, lifestyle, and diabetes risk.
 # 2. Required packages section
 
 ``` r
+#Reading in libraries
 library(readr)  
 library(dplyr)  
 library(ggplot2)  
@@ -80,9 +83,13 @@ library(gbm)
 library(Metrics)  #For logLoss()  
 library(cvms)
 library(rpart)  
+library(pls)
 ```
 
 # 3. Data section
+
+In this section we change most of the variables into factors and label
+them with appropriate names.
 
 ``` r
 #readin data  
@@ -90,9 +97,9 @@ diabetes_data <- read_csv("diabetes_binary_health_indicators_BRFSS2015.csv")
 ```
 
     ## Rows: 253680 Columns: 22
-    ## ── Column specification ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+    ## ── Column specification ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
     ## Delimiter: ","
-    ## dbl (22): Diabetes_binary, HighBP, HighChol, CholCheck, BMI, Smoker, Stroke, HeartDiseaseorAttack, PhysActivity, Fruits, Veggies, HvyAlcoholCons...
+    ## dbl (22): Diabetes_binary, HighBP, HighChol, CholCheck, BMI, Smoker, Stroke, HeartDiseaseorAttack, PhysActivity, Fruits, Veggies, HvyAlcoholConsump, A...
     ## 
     ## ℹ Use `spec()` to retrieve the full column specification for this data.
     ## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
@@ -249,12 +256,12 @@ print(sum_data2)
     ## 1 No               3.45  7.83     0    30
     ## 2 Pre              4.72  9.15     0    30
 
+## Contingency Tables
+
 After initial group summaries we then made several contingency tables in
 order to observe some of the possible relationships between variables.
 Based on these contingency tables we were able to numerically see where
 some trends might occur.
-
-## Contingency Tables
 
 ``` r
  #1-way contingency table
@@ -348,13 +355,13 @@ some trends might occur.
     ##   Fair       1230   454
     ##   Poor        597   305
 
+## Plots
+
 We then looked at some additional combinations of variables in graphs to
 observe other relationships within the data. In these plots we are
 attempting to graph possible relationships between variables. If any
 trends are found it could give insight to which variables are important
 to use in our predictive modeling.
-
-## Plots
 
 ``` r
 #Plot 1 is a violin plot that illustrates the distribution of the Mental Health variable across the two sex categories, female and male.
@@ -366,7 +373,7 @@ plot1 <- ggplot(subset_data, aes(x = Sex, y = MentHlth)) +
 print(plot1)
 ```
 
-![](High_School_Graduate_files/figure-gfm/unnamed-chunk-19-1.png)<!-- -->
+![](High_School_Graduate_files/figure-gfm/unnamed-chunk-174-1.png)<!-- -->
 
 ``` r
 #Plot 2 is a stacked bar plot that depicts the distribution of the Physical Activity variable across all age groups, with each group represented by a different color.
@@ -378,7 +385,7 @@ plot2 <- ggplot(data = subset_data, aes(x = Age, y = PhysActivity , fill = Age))
 print(plot2)
 ```
 
-![](High_School_Graduate_files/figure-gfm/unnamed-chunk-19-2.png)<!-- -->
+![](High_School_Graduate_files/figure-gfm/unnamed-chunk-174-2.png)<!-- -->
 
 ``` r
 #Plot 3 is a scatter plot designed to visualize the relationship between the Body Mass Index (BMI) and Mental Health variables, with points colored by sex (female and male)
@@ -390,7 +397,7 @@ plot3 <- ggplot(subset_data, aes(x = BMI, y = MentHlth)) +
 print(plot3)
 ```
 
-![](High_School_Graduate_files/figure-gfm/unnamed-chunk-19-3.png)<!-- -->
+![](High_School_Graduate_files/figure-gfm/unnamed-chunk-174-3.png)<!-- -->
 
 ``` r
 #Plot 4 is a count plot of income versus mental health and color coded by the response variable of Diabetes_binary  
@@ -401,7 +408,7 @@ plot4 <- ggplot(subset_data, aes(x = Income, y = MentHlth)) +
 print(plot4)
 ```
 
-![](High_School_Graduate_files/figure-gfm/unnamed-chunk-19-4.png)<!-- -->
+![](High_School_Graduate_files/figure-gfm/unnamed-chunk-174-4.png)<!-- -->
 
 ``` r
 #Plot 5 is a count plot of income versus physical health and color coded by the response variable of Diabetes_binary  
@@ -412,7 +419,7 @@ plot5 <- ggplot(subset_data, aes(x = Income, y = PhysHlth)) +
 print(plot5)
 ```
 
-![](High_School_Graduate_files/figure-gfm/unnamed-chunk-19-5.png)<!-- -->
+![](High_School_Graduate_files/figure-gfm/unnamed-chunk-174-5.png)<!-- -->
 
 ``` r
 #Plot 6 is a bar plot of diabetes_binary versus mental health used to uncrowd the graphs
@@ -424,7 +431,7 @@ plot6 <- ggplot(subset_data, aes(x = MentHlth)) +
 print(plot6)  
 ```
 
-![](High_School_Graduate_files/figure-gfm/unnamed-chunk-19-6.png)<!-- -->
+![](High_School_Graduate_files/figure-gfm/unnamed-chunk-174-6.png)<!-- -->
 
 ``` r
 #Plot 7 is a bar plot of diabetes_binary versus physical health used to uncrowd the graphs
@@ -436,7 +443,7 @@ plot7 <- ggplot(subset_data, aes(x = PhysHlth)) +
 print(plot7)  
 ```
 
-![](High_School_Graduate_files/figure-gfm/unnamed-chunk-19-7.png)<!-- -->
+![](High_School_Graduate_files/figure-gfm/unnamed-chunk-174-7.png)<!-- -->
 
 ``` r
 #Plot 8 is a bar plot of diabetes_binary versus income used to uncrowd the graphs
@@ -448,7 +455,7 @@ plot8 <- ggplot(subset_data, aes(x = Income)) +
 print(plot8)  
 ```
 
-![](High_School_Graduate_files/figure-gfm/unnamed-chunk-19-8.png)<!-- -->
+![](High_School_Graduate_files/figure-gfm/unnamed-chunk-174-8.png)<!-- -->
 
 # 5. Modeling
 
@@ -464,14 +471,8 @@ HighBP, Fruits, HvyAlcoholConsump, and NodocbcCost. Variable selection
 can be done with penalization modeling such as LASSO.
 
 ``` r
-#Turning all diabetes responses to NA
-#subset_data$Diabetes_binary[subset_data$Diabetes_binary == "Diabetes"] <- NA  
-
 #Dropping level
 subset_data$Diabetes_binary <- droplevels(subset_data$Diabetes_binary)  
-
-#Dropping all NA responses
-#training <- diabetes_data[complete.cases(diabetes_data),]  
 
 #Setting seed for reproducibility
 set.seed(3033)  
@@ -524,12 +525,6 @@ goals of your analysis.
 ## Fit a LASSO logistic regression model and choose the best model
 
 ``` r
-#Dropping unused level
-#training$Diabetes_binary <- droplevels(training$Diabetes_binary)
-#testing$Diabetes_binary <- droplevels(testing$Diabetes_binary)
-
-#training <- training[1:250,]
-
 #Setting control for the train control  
 control <- trainControl(method = "cv", number = 5, classProbs = TRUE, summaryFunction = mnLogLoss)
 
@@ -694,6 +689,7 @@ ensemble more robust and less prone to overfitting.
 ## Fit a bagged CART and choose the best model
 
 ``` r
+#Changing factor levels for eased calculations
 testing$Diabetes_binary <- factor(testing$Diabetes_binary, levels = c(0, 1), labels = c("No", "Pre"))
 
 #Setting control for the train control  
@@ -775,17 +771,17 @@ model1 <- train(Diabetes_binary ~ Age + BMI + HighBP, data = training,
                 family = binomial(link = "logit"))  
 ```
 
-    ## Warning in predict.lm(object, newdata, se.fit, scale = 1, type = if (type == : prediction from rank-deficient fit; attr(*, "non-estim") has
-    ## doubtful cases
+    ## Warning in predict.lm(object, newdata, se.fit, scale = 1, type = if (type == : prediction from rank-deficient fit; attr(*, "non-estim") has doubtful
+    ## cases
 
-    ## Warning in predict.lm(object, newdata, se.fit, scale = 1, type = if (type == : prediction from rank-deficient fit; attr(*, "non-estim") has
-    ## doubtful cases
+    ## Warning in predict.lm(object, newdata, se.fit, scale = 1, type = if (type == : prediction from rank-deficient fit; attr(*, "non-estim") has doubtful
+    ## cases
 
-    ## Warning in predict.lm(object, newdata, se.fit, scale = 1, type = if (type == : prediction from rank-deficient fit; attr(*, "non-estim") has
-    ## doubtful cases
+    ## Warning in predict.lm(object, newdata, se.fit, scale = 1, type = if (type == : prediction from rank-deficient fit; attr(*, "non-estim") has doubtful
+    ## cases
 
-    ## Warning in predict.lm(object, newdata, se.fit, scale = 1, type = if (type == : prediction from rank-deficient fit; attr(*, "non-estim") has
-    ## doubtful cases
+    ## Warning in predict.lm(object, newdata, se.fit, scale = 1, type = if (type == : prediction from rank-deficient fit; attr(*, "non-estim") has doubtful
+    ## cases
 
 ``` r
 #Saving logLoss value  
@@ -818,17 +814,17 @@ model2 <- train(Diabetes_binary ~ Age*PhysActivity, data = training,
                 family = binomial(link = "logit"))  
 ```
 
-    ## Warning in predict.lm(object, newdata, se.fit, scale = 1, type = if (type == : prediction from rank-deficient fit; attr(*, "non-estim") has
-    ## doubtful cases
+    ## Warning in predict.lm(object, newdata, se.fit, scale = 1, type = if (type == : prediction from rank-deficient fit; attr(*, "non-estim") has doubtful
+    ## cases
 
-    ## Warning in predict.lm(object, newdata, se.fit, scale = 1, type = if (type == : prediction from rank-deficient fit; attr(*, "non-estim") has
-    ## doubtful cases
+    ## Warning in predict.lm(object, newdata, se.fit, scale = 1, type = if (type == : prediction from rank-deficient fit; attr(*, "non-estim") has doubtful
+    ## cases
 
-    ## Warning in predict.lm(object, newdata, se.fit, scale = 1, type = if (type == : prediction from rank-deficient fit; attr(*, "non-estim") has
-    ## doubtful cases
+    ## Warning in predict.lm(object, newdata, se.fit, scale = 1, type = if (type == : prediction from rank-deficient fit; attr(*, "non-estim") has doubtful
+    ## cases
 
-    ## Warning in predict.lm(object, newdata, se.fit, scale = 1, type = if (type == : prediction from rank-deficient fit; attr(*, "non-estim") has
-    ## doubtful cases
+    ## Warning in predict.lm(object, newdata, se.fit, scale = 1, type = if (type == : prediction from rank-deficient fit; attr(*, "non-estim") has doubtful
+    ## cases
 
 ``` r
 #Saving logLoss value  
@@ -891,6 +887,7 @@ best_logistic_model
     ## [1] "Model1"
 
 ``` r
+#building a contender item to automate returning the name of the model that worked the best  
 log_contender <- if (best_logistic_model == "Model1"){
            log_contender <- model1
            } else if (best_logistic_model == "Model2"){
@@ -903,21 +900,31 @@ log_contender <- if (best_logistic_model == "Model1"){
 #**Due to my model objects being train objects the actual predict function that R uses to run is predict.train which requires type = "prob" for classification problems  
 log_result <- predict(log_contender, newdata = testing, type = "prob")  
 
-#Saving the testing values as an object so that they can be turned numeric for calculations  
-#binary_num <- as.numeric(testing$Diabetes_binary)  
+#Saving the testing values as numerict so that they can be used for calculations  
+testing$Diabetes_binary <- as.numeric(testing$Diabetes_binary)  
+
+#Picking the pre (prediabetes) column to use in my logloss function  
+success_col <- log_result[,"Pre"]
 
 #Creating a log loss function to compare the final results  
 LogLoss_values <- function(binary_num, pred)
 {
- -mean(binary_num * log(pred) + (1 - binary_num) * log(1 - pred))
+ abs(-mean(binary_num * log(pred) + (1 - binary_num) * log(1 - pred)))
 }
 
 #Gathering the logLoss value of the predicted logistic candidate to compare to other models  
-#logistic_logLoss <- LogLoss_values(binary_num, log_result)  
-#print(logistic_logLoss)
-
-#comparing <- c(y_pred1, y_pred2, y_pred3)
+logistic_logLoss <- LogLoss_values(testing$Diabetes_binary, success_col)  
+print(logistic_logLoss)
 ```
+
+    ## [1] 0.7210212
+
+``` r
+# Display the log loss on the testing set
+cat("Log Loss on Testing Set:", logistic_logLoss, "\n")
+```
+
+    ## Log Loss on Testing Set: 0.7210212
 
 ## *what a random forest is and why we might use it instead of a basic classification tree?*
 
@@ -936,6 +943,12 @@ prediction. This subset increases bias, but also can decrease variance.
 
 ## Fit a random forest model and choose the best model
 
+Here it looks like we fit one overall model but our mtry value, which is
+the number of variables to sample from at each split in the tree, was a
+range of 1 to 3. This range is how we fitted multiple models into one
+overall train function. So here, in order to pick the best model, we
+have to look for the mtry value with the lowest logLoss value.
+
 ``` r
 #setting control for the train control  
 control <- trainControl(method = "cv", number = 5, classProbs = TRUE, summaryFunction = mnLogLoss)  
@@ -945,101 +958,169 @@ rf_fit <- train(Diabetes_binary ~ Age + HvyAlcoholConsump + HighBP, data = train
                 method = "rf", 
                 trControl = control,
                 metric = "logLoss",
-                tuneGrid = expand.grid(mtry = 1:3)) 
+                tuneGrid = expand.grid(mtry = 1:3))  
 
-print(rf_fit)
-```
+#Saving the logloss value of mtry 1 as object
+var1 <- rf_fit$results$logLoss[[1]]  
 
-    ## Random Forest 
-    ## 
-    ## 250 samples
-    ##   3 predictor
-    ##   2 classes: 'No', 'Pre' 
-    ## 
-    ## No pre-processing
-    ## Resampling: Cross-Validated (5 fold) 
-    ## Summary of sample sizes: 201, 200, 199, 200, 200 
-    ## Resampling results across tuning parameters:
-    ## 
-    ##   mtry  logLoss 
-    ##   1     3.381483
-    ##   2     2.311426
-    ##   3     1.673454
-    ## 
-    ## logLoss was used to select the optimal model using the smallest value.
-    ## The final value used for the model was mtry = 3.
+#Saving the logloss value of mtry 2 as object
+var2 <- rf_fit$results$logLoss[[2]]  
 
-``` r
-#Fitting a random forest model2
-#rf_fit2 <- train(Diabetes_binary ~ Age + PhysActivity + BMI, data = training, 
-                #method = "rf", 
-                #trControl = control,
-                #metric = "logLoss",
-                #tuneGrid = expand.grid(mtry = 1:3)) 
-
-#print(rf_fit2)  
+#Saving the logloss value of mtry 3 as object
+var3 <- rf_fit$results$logLoss[[3]]  
 
 #Making a table to compare the logLoss metric values and pick the smallest value  
-#comparing <- c(rf_fit = rf, Model2 = m2,Model3 = m3)
-#best_logistic_model <- names(which.min(comparing))  
-#best_logistic_model
+battle_of_logloss <- c(Mtry1 = var1, Mtry2 = var2, Mtry3 = var3)
+best_rf_model <- names(which.min(battle_of_logloss))  
 
-#log_contender <- if (best_logistic_model == "Model1"){
-           #log_contender <- model1
-           #} else if (best_logistic_model == "Model2"){
-           #long_contender <- model2
-           #} else if (best_logistic_model == "Model3"){
-           #log_contender <- model3
-#}
-
-#Predic
+best_rf_model
 ```
 
-## What the Oblique Random Forest model is?
+    ## [1] "Mtry3"
 
-Answer
+``` r
+#building a contender item to automate returning the mtry tree that worked the best in the random forest model
+rf_contender <- if (best_rf_model == "Mtry1"){
+           rf_contender <- 1
+           } else if (best_rf_model == "Mtry2"){
+           rf_contender <- 2
+           } else if (best_rf_model == "Mtry3"){
+           rf_contender <- 3
+           }
 
-\<\<\<\<\<\<\< HEAD Add answer
+#Now to specify what training model (which mtry) should be used on the testing dataset 
+#We took the same format as above, but we automated the mtry value by inputting our winning rf_contender value
+rf_best <- train(Diabetes_binary ~ Age + HvyAlcoholConsump + HighBP, data = training, 
+                method = "rf", 
+                trControl = control,
+                metric = "logLoss",
+                tuneGrid = expand.grid(mtry = rf_contender))  
 
-## Fit a Model 1 and choose the best model
+#Now we can train the testing dataset and predict with our rf_best model  
+rf_result <- predict(rf_best, newdata = testing)  
 
-Add answer
+#Turning values into 0 and 1 for the log loss calculation
+testing$Diabetes_binary <- ifelse(testing$Diabetes_binary == "No", 0, 1)
 
-## What the Model 2 is?
+#Picking the pre (prediabetes) column to use in my logloss function  
+pre_col <- ifelse(rf_result == "No", 0, 1)
 
-## Fit a Model 2 and choose the best model
+#Reiterating the log loss function to compare the final results  
+#The 1e-15 is added in here because the results of the rf predictions are 0 and 1 and in the equation binary_num*log(pred) would result in Nan  
+LogLoss_values <- function(binary_num, pred)
+{ abs(-mean(binary_num * log(pred + 1e-15) + (1 - binary_num) * log(1 - pred + 1e-15)))
+}
 
-\#\`\`\`{r ORF Model}  
-\#setting control for the train control  
-\####Rot_fit \<- train(Diabetes_binary ~ ., data = training_num,
-\#method = “rotationForest”, \#trControl = control, \#metric =
-“logLoss”)
+#Gathering the logLoss value of the predicted logistic candidate to compare to other models  
+rf_logLoss <- LogLoss_values(testing$Diabetes_binary, pre_col)  
 
-\#print(Rot_fit)
+print(rf_logLoss)
+```
 
-## Fit a Oblique Random Forest model and choose the best model
+    ## [1] 32.00121
 
-\#\`\`\`{r ORF Model}  
-\#Fitting the model with the same variable combinations as the logistic
-regression done earlier  
-\#ORF_fit2 \<- (Diabetes_binary ~ Age\*PhysActivity, data = training)
+``` r
+# Display the log loss on the testing set
+cat("Log Loss on Testing Set:", rf_logLoss, "\n")
+```
 
-\#ORF_fit1 predictions  
-\#Rot_pred1 \<- predict(Rot_fit1, newdata = testing)
+    ## Log Loss on Testing Set: 32.00121
 
-\#ORF_fit2 predictions  
-\#ORF_pred2 \<- predict(ORF_fit2, newdata = testing)
+## What the Partial Least Squares model is?
 
-\#ORF_fit3 predictions  
-\#ORF_pred3 \<- predict(ORF_fit3, newdata = testing) \#### \#control \<-
-trainControl(method = “cv”, number = 5, classProbs = TRUE,
-summaryFunction = mnLogLoss)
+Partial least squares(PLS) model is a dimension reduction techinque. PLS
+is similar to principal component analysis except that the reduction
+strategy used by PLS is driven by the response variable. PLS picks
+linear combinations of correlated variables that cover the most
+variability in the dataset to model as predictors. PLS is more difficult
+to interpret than logistic regression or a tree regression.
 
-\#Fitting an oblique random forest model \#ada_fit \<-
-train(Diabetes_binary ~ ., data = training, \#method = “Adaboost.M1”,
-\#trControl = control, \#metric = “logLoss”) \#print(Rot_fit)
+## Fit models and choose the best model
+
+``` r
+#creating the control for the train model
+control <- trainControl(method = "cv", number = 5, classProbs = TRUE, summaryFunction = mnLogLoss)  
+
+#Fitting a partial least squares model
+pls_fit <- train(Diabetes_binary ~ Sex + BMI + HighChol + MentHlth + Fruits + NoDocbcCost, data = training, 
+                method = "kernelpls", 
+                trControl = control,
+                metric = "logLoss")  
+
+#Saving the logloss value of mtry 1 as object
+comp1 <- pls_fit$results$logLoss[[1]]  
+
+#Saving the logloss value of mtry 2 as object
+comp2 <- pls_fit$results$logLoss[[2]]  
+
+#Saving the logloss value of mtry 3 as object
+comp3 <- pls_fit$results$logLoss[[3]]  
+
+#Making a table to compare the logLoss metric values and pick the smallest value  
+battles_of_logloss <- c(Ncomp1 = comp1, Ncomp2 = comp2, Ncomp3 = comp3)
+best_pls_model <- names(which.min(battles_of_logloss))  
+
+best_pls_model
+```
+
+    ## [1] "Ncomp3"
+
+``` r
+#building a contender item to automate returning the mtry tree that worked the best in the random forest model
+pls_contender <- if (best_pls_model == "Ncomp1"){
+           pls_contender <- 1
+           } else if (best_pls_model == "Ncomp2"){
+           pls_contender <- 2
+           } else if (best_pls_model == "Ncomp3"){
+           pls_contender <- 3
+           }
+
+#Now to specify what training model (which mtry) should be used on the testing dataset 
+#We took the same format as above, but we automated the mtry value by inputting our winning rf_contender value
+pls_best <- train(Diabetes_binary ~ Sex + BMI + HighChol + MentHlth + Fruits + NoDocbcCost, data = training, 
+                method = "kernelpls", 
+                trControl = control,
+                metric = "logLoss",
+                ncmop = pls_contender)  
+
+#Now we can train the testing dataset and predict with our pls_best model  
+pls_result <- predict(pls_best, newdata = testing)  
+
+#Turning values into 0 and 1 for the log loss calculation
+testing$Diabetes_binary <- ifelse(testing$Diabetes_binary == "No", 0, 1)
+
+#Picking the pre (prediabetes) column to use in my logloss function  
+pre_col <- ifelse(pls_result == "No", 0, 1)
+
+#Reiterating the log loss function to compare the final results  
+#The 1e-15 is added in here because the results of the rf predictions are 0 and 1 and in the equation binary_num*log(pred) would result in Nan  
+LogLoss_values <- function(binary_num, pred)
+{ abs(-mean(binary_num * log(pred + 1e-15) + (1 - binary_num) * log(1 - pred + 1e-15)))
+}
+
+#Gathering the logLoss value of the predicted logistic candidate to compare to other models  
+pls_logLoss <- LogLoss_values(testing$Diabetes_binary, pre_col)  
+
+print(pls_logLoss)
+```
+
+    ## [1] 33.79934
+
+``` r
+# Display the log loss on the testing set
+cat("Log Loss on Testing Set:", pls_logLoss, "\n")
+```
+
+    ## Log Loss on Testing Set: 33.79934
 
 ## 6. Final Model Selection (Compare the six best above and declare an overall winner)
+
+What should happen is the tree or ensemble methods should be in the
+winning circle of the lowest log loss value. Ensemble methods run
+through multiple tree builds which should lower the variance of the
+model. With a lower variance there would hopefully be more predictice
+power. However, there are many tuning parameters that can be optimized
+and this report may not have the best fits overall.
 
 ``` r
 #Lasso best model 
@@ -1048,11 +1129,20 @@ Lasso <- test_logloss_lasso
 #Bringing the tree best model  
 Tree <- test_logloss_tree  
 
-#Brining the cart best model  
+#Bringing the cart best model  
 Cart <- test_logloss_cart  
 
+#Bringing in the logistic best model  
+Logistic <- logistic_logLoss  
+
+#Bringing in the random forest model  
+Random <- rf_logLoss  
+
+#Bringing in the partial least squares model  
+Partial <- pls_logLoss  
+
 #Comparing the models  
-best_of_best <- c(Lasso_Model = Lasso, Tree_Model = Tree, Cart_Model = Cart)  
+best_of_best <- c(Lasso_Model = Lasso, Tree_Model = Tree, Cart_Model = Cart, Logistic_Model = Logistic, Random_Forest_Model = Random, Partial_Least_Squares = Partial)  
 best <- names(which.min(best_of_best))  
 
 # Get the name or identifier of the best model
@@ -1062,37 +1152,4 @@ best_model <- paste(best)
 cat("The best model is:", best_model, "with log loss:", best_of_best[best], "\n")  
 ```
 
-    ## The best model is: Tree_Model with log loss: 0.7220256
-
-## NO SURE IN WHAT POINT WE SHOULD ADD THIS PIECE OF CODE :/
-
-## X. Automation
-
-``` r
-#Do it for 1 first and then all level of education
-#rmarkdown::render("Project 3.Rmd", out_put_file = "None_Elementary.md", params = list(Education = "None/Elementary"))
-
-#For all level of education
-#get unique education levels
-#Education_levels <- unique(diabetes_data$Education)
-
-#create filenames
-#output_file <- paste0(Education_levels, ".md") 
-
-#lapply(unique(diabetes_data$Education), function(Education.i) {
-  #rmarkdown::render("Project3.Rmd",
-                    #params = list(Education = Education.i),
-                    #output_file = paste0(Education.i, ".md"))
-#})
-#
-#create a list for each level of education with just the level name parameter
-#params = lapply(Education_levels, FUN = function(x){list(Education = x)})
-
-#Put into a data frame
-#reports <- tibble(output_file, params)
-#
-# knit
-#apply(reports, MARGIN = 1, FUN = function(x){render(input = "Project3.Rmd", output_file = x[[1]], params = x[[2]])})
-```
-
-End report! :)
+    ## The best model is: Logistic_Model with log loss: 0.7210212
