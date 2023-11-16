@@ -3,9 +3,8 @@ title: "Project 3"
 author: "Jasmine Gallaway and Keren Vivas"
 date: "2023-10-30"
 output: github_document:
-    html_preview: FALSE
-params:
- Education: "None/Elementary"
+#params:
+ #Education: "None/Elementary"
 ---
 
 ```{r setup, include=FALSE}
@@ -40,13 +39,11 @@ library(dplyr)
 library(ggplot2)  
 library(caret) 
 library(rmarkdown)
-library(shiny)
 library(purrr)  
 library(randomForest)  
 library(gbm)  
 library(Metrics)  #For logLoss()  
-library(rpart)  
-library(MASS)
+library(rpart) 
 ```
 # 3. Data section
 ```{r cleaning_data}
@@ -304,7 +301,7 @@ training <- diabetes_data[intrain,]
 testing <- diabetes_data[-intrain,]
 
 #Smaller training set for computations  
-trainig <- training[1:250,]
+training <- training[1:250,]
 ```
 ## _What log loss is and why we may prefer it to things like accuracy?_
 
@@ -384,7 +381,8 @@ log_contender <- if (best_logistic_model == "Model1"){
 log_result <- predict(log_contender, newdata = testing, type = "prob")  
 
 #Saving the testing values as an object so that they can be turned numeric for calculations  
-binary_num <- as.numeric(testing$Diabetes_binary)
+binary_num <- as.numeric(testing$Diabetes_binary)  
+
 #Creating a log loss function to compare the final results  
 LogLoss_values <- function(binary_num, pred)
 {
@@ -452,13 +450,29 @@ rf_fit <- train(Diabetes_binary ~ Age + HvyAlcoholConsump + HighBP, data = train
 
 print(rf_fit)
 
-#Fitting to the testing dataset  
-#rfPred <- predict(rf_fit, newdata = dplyr::select(test, -Diabetes_binary))  
+#Fitting a random forest model2
+#rf_fit2 <- train(Diabetes_binary ~ Age + PhysActivity + BMI, data = training, 
+                #method = "rf", 
+                #trControl = control,
+                #metric = "logLoss",
+                #tuneGrid = expand.grid(mtry = 1:3)) 
 
-#Saving a summary statistic of MSE for the randomForest  
-#rfMSE <- sqrt(mean(()))
+#print(rf_fit2)  
 
-#summary(rf_fit)
+#Making a table to compare the logLoss metric values and pick the smallest value  
+comparing <- c(rf_fit = rf, Model2 = m2,Model3 = m3)
+best_logistic_model <- names(which.min(comparing))  
+best_logistic_model
+
+log_contender <- if (best_logistic_model == "Model1"){
+           log_contender <- model1
+           } else if (best_logistic_model == "Model2"){
+           long_contender <- model2
+           } else if (best_logistic_model == "Model3"){
+           log_contender <- model3
+}
+
+#Predic
 ```
 ## Two models thast was not done in class
 
@@ -477,19 +491,32 @@ Add answer
 
 
 ## Fit a Model 2 and choose the best model
-```{r ORF Model}  
-#Fitting the model with the same variable combinations as the logistic regression done earlier  
-ORF_fit2 <- (Diabetes_binary ~ Age*PhysActivity, data = training)  
+#```{r ORF Model}  
+#setting control for the train control  
+####Rot_fit <- train(Diabetes_binary ~ ., data = training_num, 
+                #method = "rotationForest", 
+                #trControl = control,
+                #metric = "logLoss")
+
+#print(Rot_fit)
 
 #ORF_fit1 predictions  
-ORF_pred1 <- predict(ORF_fit1, newdata = testing)  
+#Rot_pred1 <- predict(Rot_fit1, newdata = testing)  
 
 #ORF_fit2 predictions  
-ORF_pred2 <- predict(ORF_fit2, newdata = testing)  
+#ORF_pred2 <- predict(ORF_fit2, newdata = testing)  
 
 #ORF_fit3 predictions  
-ORF_pred3 <- predict(ORF_fit3, newdata = testing)
+#ORF_pred3 <- predict(ORF_fit3, newdata = testing)
+####
+#control <- trainControl(method = "cv", number = 5, classProbs = TRUE, summaryFunction = mnLogLoss)  
 
+#Fitting an oblique random forest model
+#ada_fit <- train(Diabetes_binary ~ ., data = training, 
+                #method = "Adaboost.M1", 
+                #trControl = control,
+                #metric = "logLoss")
+#print(Rot_fit)
 
 ## 6. Final Model Selection (Compare the six best above and declare an overall winner)
 
@@ -499,7 +526,7 @@ Add answer
 ## NO SURE IN WHAT POINT WE SHOULD ADD THIS PIECE OF CODE :/
 
 ## X. Automation
-```{r params set up}
+#```{r params set up}
 #Do it for 1 first and then all level of education
 #rmarkdown::render("Project 3.Rmd", out_put_file = "None_Elementary.md", params = list(Education = "None/Elementary"))
 
