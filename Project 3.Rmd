@@ -2,7 +2,8 @@
 title: "Project 3"
 author: "Jasmine Gallaway and Keren Vivas"
 date: "2023-10-30"
-output: github_document
+output: github_document:
+    html_preview: FALSE
 params:
  Education: "None/Elementary"
 ---
@@ -45,6 +46,7 @@ library(randomForest)
 library(gbm)  
 library(Metrics)  #For logLoss()  
 library(rpart)  
+library(MASS)
 ```
 # 3. Data section
 ```{r cleaning_data}
@@ -473,11 +475,20 @@ Add answer
 
 ## What the Model 2 is?
 
-Add answer
 
 ## Fit a Model 2 and choose the best model
+```{r ORF Model}  
+#Fitting the model with the same variable combinations as the logistic regression done earlier  
+ORF_fit2 <- (Diabetes_binary ~ Age*PhysActivity, data = training)  
 
-Add answer
+#ORF_fit1 predictions  
+ORF_pred1 <- predict(ORF_fit1, newdata = testing)  
+
+#ORF_fit2 predictions  
+ORF_pred2 <- predict(ORF_fit2, newdata = testing)  
+
+#ORF_fit3 predictions  
+ORF_pred3 <- predict(ORF_fit3, newdata = testing)
 
 
 ## 6. Final Model Selection (Compare the six best above and declare an overall winner)
