@@ -29,7 +29,26 @@ library(randomForest)
 
 # Render the R Markdown file to README.md
 
-rmarkdown::render("Project 3.Rmd", output_format = "github_document", output_file = "PredictiveModels.md")
+rmarkdown::render("Project 3.Rmd", output_format = "github_document", output_file = "PredictiveModels.md") 
+
+# Automation of different education level .md files 
+
+#For all level of education
+#get unique education levels
+Education_levels <- unique(diabetes_data$Education)
+
+#create filenames
+output_file <- paste0(Education_levels, ".md")
+
+#create a list for each level of education with just the level name parameter
+params = lapply(Education_levels, FUN = function(x){list(Education = x)})
+
+#Put into a data frame
+reports <- tibble(output_file, params)
+
+# knit
+apply(reports, MARGIN = 1, FUN = function(x){render(input = "Project 3.Rmd", output_file = x[[1]], params = x[[2]])
+})
 
 # Links to .html files of the generated analyses
 

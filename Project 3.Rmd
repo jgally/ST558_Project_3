@@ -43,7 +43,7 @@ library(shiny)
 library(purrr)  
 library(randomForest)  
 library(gbm)  
-library(MLmetrics)  #For logLoss()  
+library(Metrics)  #For logLoss()  
 library(rpart)  
 ```
 # 3. Data section
@@ -154,8 +154,8 @@ Below our data set is subset into the specified education level for the page.
 
 ```{r filter data for the specified education level}
 # Subset data into a single Education level
-subset_data <- diabetes_data %>%
- filter(Education == params$Education)
+#subset_data <- diabetes_data %>%
+ #filter(Education == params$Education)
 ```
 
 # 4. Summarizations section  
@@ -300,6 +300,9 @@ intrain <- createDataPartition(y = diabetes_data$Diabetes_binary, p= 0.7, list =
 #Saving the splits  
 training <- diabetes_data[intrain,]
 testing <- diabetes_data[-intrain,]
+
+#Smaller training set for computations  
+trainig <- training[1:250,]
 ```
 ## _What log loss is and why we may prefer it to things like accuracy?_
 
@@ -314,32 +317,35 @@ Logistic regression is a form of predictive analysis in which the regression mod
 #Setting trainControl to include cv  
 my_ctrl <- trainControl(method = "cv", number = 5, classProbs = TRUE, summaryFunction = mnLogLoss)
 
-# Model 1: Logistic Regression with default parameters
-model1 <- train(Diabetes_binary ~., data = training, 
+# Model 1: Logistic Regression with first set of predictors
+model1 <- train(Diabetes_binary ~ Age + BMI + HighBP, data = training, 
                 method = "glm", 
                 trControl = my_ctrl,
                 metric = "logLoss",
                 family = binomial(link = "logit"))  
+
+#Saving logLoss value  
+m1 <- model1$results$logLoss  
 
 #Observing Summaries  
 model1  
 model1$finalModel  
 summary(model1)   
 
-# Model 2: Logistic Regression with different parameters (e.g., regularization)
+# Model 2: Logistic Regression with different predictor variables
 model2 <- train(Diabetes_binary ~ Age*PhysActivity, data = training, 
                 method = "glm", 
                 trControl = my_ctrl,
                 metric = "logLoss",
                 family = binomial(link = "logit"))  
 
+#Saving logLoss value  
+m2 <- model2$results$logLoss  
+
 #Observing Summaries  
 model2  
 model2$finalModel  
 summary(model2)  
-
-#Predictions with testing  
-y_pred2 <- predict(model2, newdata = testing, type = "response")
 
 
 # Model 3: Logistic Regression with more parameter variations
@@ -349,22 +355,44 @@ model3 <- train(Diabetes_binary ~ Age + PhysActivity + HvyAlcoholConsump + Fruit
                 metric = "logLoss",
                 family = binomial(link = "logit"))  
 
+#Saving logLoss value  
+m3 <- model3$results$logLoss  
+
 #Observing Summaries  
 model3  
 model3$finalModel  
 summary(model3)  
 
-#Prediction for model 1 with testing data  
-y_pred1 <- predict(model1, newdata = testing, type = "response")  
-
-#Predictions for model 2 with testing data  
-y_pred2 <- predict(model2, newdata = testing, type = "response")  
-
-#Predictions for model 3 with testing data    
-y_pred3 <- predict(model3, newdata = testing, type = "response")  
 
 #Making a table to compare the logLoss metric values and pick the smallest value  
-comparing <- c(y_pred1, y_pred2, y_pred3)
+comparing <- c(Model1 = m1, Model2 = m2,Model3 = m3)
+best_logistic_model <- names(which.min(comparing))  
+best_logistic_model
+
+log_contender <- if (best_logistic_model == "Model1"){
+           log_contender <- model1
+           } else if (best_logistic_model == "Model2"){
+           long_contender <- model2
+           } else if (best_logistic_model == "Model3"){
+           log_contender <- model3
+}
+
+#Prediction for contending logistic model with testing data  
+#**Due to my model objects being train objects the actual predict function that R uses to run is predict.train which requires type = "prob" for classification problems  
+log_result <- predict(log_contender, newdata = testing, type = "prob")  
+
+#Saving the testing values as an object so that they can be turned numeric for calculations  
+binary_num <- as.numeric(testing$Diabetes_binary)
+#Creating a log loss function to compare the final results  
+LogLoss_values <- function(binary_num, pred)
+{
+ -mean(binary_num * log(pred) + (1 - binary_num) * log(1 - pred))
+}
+
+#Gathering the logLoss value of the predicted logistic candidate to compare to other models  
+logistic_logLoss <- LogLoss_values(binary_num, log_result)  
+print(logistic_logLoss)
+
 
 ```
 
@@ -413,17 +441,14 @@ A random forest is another ensemble method of modeling. Random forests are simil
 #setting control for the train control  
 control <- trainControl(method = "cv", number = 5, classProbs = TRUE, summaryFunction = mnLogLoss)  
 
-#Setting a better tuneGrid so the computation is not as long  
-rf_grid <- expand.grid(.mtry = c(2, 4, 6))
-
 #Fitting a random forest model
-#rf_fit <- train(Diabetes_binary ~ Sex + HvyAlcoholConsump + NoDocbcCost, data = training, 
-                #method = "rf", 
-                #trControl = control,
-                #metric = "logLoss",
-                #tuneGrid = expand.grid(mtry = 1:3)) 
+rf_fit <- train(Diabetes_binary ~ Age + HvyAlcoholConsump + HighBP, data = training, 
+                method = "rf", 
+                trControl = control,
+                metric = "logLoss",
+                tuneGrid = expand.grid(mtry = 1:3)) 
 
-#print(rf_fit)
+print(rf_fit)
 
 #Fitting to the testing dataset  
 #rfPred <- predict(rf_fit, newdata = dplyr::select(test, -Diabetes_binary))  
@@ -436,7 +461,7 @@ rf_grid <- expand.grid(.mtry = c(2, 4, 6))
 ## Two models thast was not done in class
 
 Model 1: Add answer
-Model 2: Add answer
+Model 2: Oblique Random Forest
 
 ## What the Model 1 is?
 
