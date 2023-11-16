@@ -696,7 +696,7 @@ lapply(unique(diabetes_data$Education), function(Education.i) {
                     params = list(Education = Education.i),
                     output_file = paste0(Education.i, ".md"))
 })
-
+#
 #create a list for each level of education with just the level name parameter
 #params = lapply(Education_levels, FUN = function(x){list(Education = x)})
 
