@@ -41,10 +41,14 @@ library(ggplot2)
 library(caret) 
 library(rmarkdown)
 library(shiny)
-library(purrr)  
+library(purrr)
+library(glmnet)
 library(randomForest)  
-library(gbm)  
-library(Metrics)  #For logLoss()  
+library(gbm) 
+library(ModelMetrics)
+library(Metrics)  #For logLoss() 
+library(MLmetrics)  #For logLoss() 
+library(cvms)
 library(rpart)  
 library(MASS)
 ```
@@ -58,13 +62,13 @@ diabetes_data <- as_tibble(diabetes_data)
 
 #changing diabetes_binary to factor  
 diabetes_data$Diabetes_binary <- diabetes_data$Diabetes_binary %>% 
-  factor(levels = c(0,1,2),
-         labels = c("No_Diabetes", "Prediabetes", "Diabetes"))  
+  factor(levels = c(0,1),
+         labels = c("No","Pre"))  
 
 #combine education levels one and two  
 diabetes_data$Education <- diabetes_data$Education %>% 
   factor(levels = c(1,2,3,4,5,6), 
-            labels = c("None/Elementary", "None/Elementary", "Some High School", "High School Graduate", "Some College", "College Graduate"))  
+            labels = c("None/Elementary", "None/Elementary", "Some_High_School", "High_School_Graduate", "Some_College", "College_Graduate"))  
 
 #changing sex to factor  
 diabetes_data$Sex <- diabetes_data$Sex %>% 
@@ -79,7 +83,7 @@ diabetes_data$Age <- diabetes_data$Age %>%
 #Changing fruit to factor  
 diabetes_data$Fruits <- diabetes_data$Fruits %>% 
   factor(levels = c(0, 1),
-         labels = c("None", "Yes 1 or more"))  
+         labels = c("None", "Yes"))  
 
 #Changing physical activity to factor  
 diabetes_data$PhysActivity <- diabetes_data$PhysActivity %>% 
@@ -104,7 +108,7 @@ diabetes_data$HeartDiseaseorAttack <- diabetes_data$HeartDiseaseorAttack %>%
 #Changing veggies to factor  
 diabetes_data$Veggies <- diabetes_data$Veggies %>% 
   factor(levels = c(0, 1),
-         labels = c("None", "Yes 1 or more"))  
+         labels = c("None", "Yes"))  
 
 #Changing Heavy alcohol consumption to factor  
 diabetes_data$HvyAlcoholConsump <- diabetes_data$HvyAlcoholConsump %>% 
@@ -134,17 +138,17 @@ diabetes_data$DiffWalk <- diabetes_data$DiffWalk %>%
 #changing HighBP to factor
 diabetes_data$HighBP <- diabetes_data$HighBP %>%
   factor(levels = c(0, 1),
-         labels = c("No high BP", "High BP"))
+         labels = c("No", "Yes"))
 
 #changing HighChol to factor
 diabetes_data$HighChol <- diabetes_data$HighChol %>%
   factor(levels = c(0,1),
-         labels = c("No high cholesterol", "High cholesterol"))
+         labels = c("No", "Yes"))
 
 #changing CholCheck to factor
 diabetes_data$CholCheck <- diabetes_data$CholCheck %>%
   factor(levels = c(0,1),
-         labels = c("No check in 5 years", "Check in 5 years"))
+         labels = c("No", "Yes"))
 
 #changing Income to factor
 diabetes_data$Income <- diabetes_data$Income %>%
@@ -166,7 +170,7 @@ Below is some initial exploratory data analysis on the dataset. We began with lo
 
 ```{r EDA}
 #gathering summary statistics of BMI  
-sum_data1 <- diabetes_data %>% 
+sum_data1 <- subset_data %>% 
   group_by(Diabetes_binary) %>%
   summarize(mean = mean(BMI),
             sd = sd(BMI),
@@ -177,7 +181,7 @@ sum_data1 <- diabetes_data %>%
 print(sum_data1)  
 
 #Summary statistics of mental health 
-sum_data2 <- diabetes_data %>% 
+sum_data2 <- subset_data %>% 
   group_by(Diabetes_binary) %>% 
   summarize(mean = mean(MentHlth),
             sd = sd(MentHlth),
@@ -191,70 +195,73 @@ After initial group summaries we then made several contingency tables in order t
 ```{r Contingency tables}
 
  #1-way contingency table
- one_way_table <- table(diabetes_data$Fruits)
+ one_way_table <- table(subset_data$Fruits)
  one_way_table
  
  #2-way contingency table
- two_way_table <- table(diabetes_data$Smoker, diabetes_data$HighChol)
+ two_way_table <- table(subset_data$Smoker, subset_data$HighChol)
  two_way_table
  
  #3-way contingency table
- three_way_table <- table(diabetes_data$HighBP, diabetes_data$HighChol, diabetes_data$HeartDiseaseorAttack)
+ three_way_table <- table(subset_data$HighBP, subset_data$HighChol, subset_data$HeartDiseaseorAttack)
  three_way_table  
  
 #4 Contingency table for diabetes_binary vs no doctors visits because of cost  
- tbl_four <- table(diabetes_data$NoDocbcCost, diabetes_data$Diabetes_binary)  
+ tbl_four <- table(subset_data$NoDocbcCost, subset_data$Diabetes_binary)  
  tbl_four
  
 #5 Contingency table for diabetes_binary vs general health ratings  
- tbl_five <- table(diabetes_data$GenHlth, diabetes_data$Diabetes_binary)  
+ tbl_five <- table(subset_data$GenHlth, subset_data$Diabetes_binary)  
  tbl_five  
 
 #6 Contingency table for diabetes_binary vs NoDocbcCost vs GenHlth  
- tbl_six <- table(diabetes_data$GenHlth, diabetes_data$Diabetes_binary, diabetes_data$NoDocbcCost)  
+ tbl_six <- table(subset_data$GenHlth, subset_data$Diabetes_binary, subset_data$NoDocbcCost)  
  tbl_six
 ```
 
 We then looked at some additional combinations of variables in graphs to observe other relationships within the data. In these plots we are attempting to graph possible relationships between variables. If any trends are found it could give insight to which variables are important to use in our predictive modeling. 
 
 ```{r Plots}
-#Violin plot
-plot1 <- ggplot(diabetes_data, aes(x = Sex, y = MentHlth)) +
+#Plot 1 is a violin plot that illustrates the distribution of the Mental Health variable across the two sex categories, female and male.
+
+plot1 <- ggplot(subset_data, aes(x = Sex, y = MentHlth)) +
   geom_violin(fill = "lightblue", color = "blue", alpha = 0.7) +
   labs(title = "Mental health condition across gender", x = "Gender", y = "Mental health condition") +
   theme_minimal() 
 print(plot1)
 
-#Bar plot
-plot2 <- ggplot(data = diabetes_data, aes(x = Age, y = PhysActivity , fill = Age)) +
+#Plot 2 is a stacked bar plot that depicts the distribution of the Physical Activity variable across all age groups, with each group represented by a different color.
+
+plot2 <- ggplot(data = subset_data, aes(x = Age, y = PhysActivity , fill = Age)) +
   geom_bar(stat = "identity") +
   labs(title = "Stacked Bar Plot of Physical activity days by Age Group", x = "Age Group", y = "Physical activity (days)") +
   theme_minimal()  
 print(plot2)
 
-#Scatter plot
-plot3 <- ggplot(diabetes_data, aes(x = BMI, y = MentHlth)) +
+#Plot 3 is a scatter plot designed to visualize the relationship between the Body Mass Index (BMI) and Mental Health variables, with points colored by sex (female and male)
+
+plot3 <- ggplot(subset_data, aes(x = BMI, y = MentHlth)) +
   geom_point(aes(color = Sex), size = 3) +
   labs(title = "Scatterplot of BMI vs. Mental health", x = "BMI", y = "Mental Health") +
   theme_minimal()  
 print(plot3)
 
 #Plot 4 is a count plot of income versus mental health and color coded by the response variable of Diabetes_binary  
-plot4 <- ggplot(diabetes_data, aes(x = Income, y = MentHlth)) + 
+plot4 <- ggplot(subset_data, aes(x = Income, y = MentHlth)) + 
   geom_count(aes(color = Diabetes_binary)) + 
   labs(title = "Count Plot of Income vs. Mental Health", x = "Income", y = "Mental Health") + 
   theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))
 print(plot4)
 
 #Plot 5 is a count plot of income versus physical health and color coded by the response variable of Diabetes_binary  
-plot5 <- ggplot(diabetes_data, aes(x = Income, y = PhysHlth)) + 
+plot5 <- ggplot(subset_data, aes(x = Income, y = PhysHlth)) + 
   geom_count(aes(color = Diabetes_binary)) + 
   labs(title = "Count Plot of Income vs. Physical Health", x = "Income", y = "Physical Health") + 
   theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))
 print(plot5)
 
 #Plot 6 is a bar plot of diabetes_binary versus mental health used to uncrowd the graphs
-plot6 <- ggplot(diabetes_data, aes(x = MentHlth)) + 
+plot6 <- ggplot(subset_data, aes(x = MentHlth)) + 
   geom_bar(aes(color = Diabetes_binary, fill = Diabetes_binary)) + 
   facet_wrap(~Diabetes_binary) + 
   labs(title = "Bar Plot of Mental Health", x = "How Many Bad Mental Days", y = "Participant Count") + 
@@ -262,7 +269,7 @@ plot6 <- ggplot(diabetes_data, aes(x = MentHlth)) +
 print(plot6)  
 
 #Plot 7 is a bar plot of diabetes_binary versus physical health used to uncrowd the graphs
-plot7 <- ggplot(diabetes_data, aes(x = PhysHlth)) + 
+plot7 <- ggplot(subset_data, aes(x = PhysHlth)) + 
   geom_bar(aes(color = Diabetes_binary, fill = Diabetes_binary)) + 
   facet_wrap(~Diabetes_binary) + 
   labs(title = "Bar Plot of Physical Health", x = "Days Active", y = "Participant Count") + 
@@ -270,7 +277,7 @@ plot7 <- ggplot(diabetes_data, aes(x = PhysHlth)) +
 print(plot7)  
 
 #Plot 8 is a bar plot of diabetes_binary versus income used to uncrowd the graphs
-plot8 <- ggplot(diabetes_data, aes(x = Income)) + 
+plot8 <- ggplot(subset_data, aes(x = Income)) + 
   geom_bar(aes(color = Diabetes_binary, fill = Diabetes_binary)) + 
   facet_wrap(~Diabetes_binary) + 
   labs(title = "Bar Plot of Income", x = "Income", y = "Frequency") + 
@@ -285,27 +292,187 @@ Below begins the work to shift into modeling our data. We had some initial issue
 
 ```{r Split data} 
 #Turning all diabetes responses to NA
-diabetes_data$Diabetes_binary[diabetes_data$Diabetes_binary == "Diabetes"] <- NA  
+#subset_data$Diabetes_binary[subset_data$Diabetes_binary == "Diabetes"] <- NA  
 
 #Dropping level
-diabetes_data$Diabetes_binary <- droplevels(diabetes_data$Diabetes_binary)  
+subset_data$Diabetes_binary <- droplevels(subset_data$Diabetes_binary)  
 
 #Dropping all NA responses
-training <- diabetes_data[complete.cases(diabetes_data),]  
+#training <- diabetes_data[complete.cases(diabetes_data),]  
 
 #Setting seed for reproducibility
 set.seed(3033)  
 
 #Splitting the data  
-intrain <- createDataPartition(y = diabetes_data$Diabetes_binary, p= 0.7, list = FALSE)  
+intrain <- createDataPartition(y = subset_data$Diabetes_binary, p= 0.7, list = FALSE) 
 
 #Saving the splits  
-training <- diabetes_data[intrain,]
-testing <- diabetes_data[-intrain,]
+training <- subset_data[intrain,]
+testing <- subset_data[-intrain,]
 ```
 ## _What log loss is and why we may prefer it to things like accuracy?_
 
 Logarithmic loss is metric used to evaluate how well a model fits. Also known as cross-entropy loss, log loss is used on binary classification models where the responses are either 0 or 1. Log loss calculates the difference between the predicted probabilities and the actual values. The lower the log loss value, the better the fit of the model is to the data. Log loss is preferred with this data set because of our focus on the binary response of diabetes. Our `Diabetes_binary` response variable has three responses of no diabetes, prediabetes, and diabetes; however, there seems to be no recorded response of the factor level of 2 (diabetes) within the data so the recorded responses are either 0 or 1. Log loss is better than accuracy in this case because log loss focuses on models that predict the class better and penalizes models that are further from the class. 
+
+## _What a LASSO logistic regression model is and why we might try to use this over basic logistic regresion?_
+
+LASSO (Least Absolute Shrinkage and Selection Operator) is a type of regularized logistic regression. It adds a penalty term to the logistic regression's likelihood function to encourage feature selection by driving some coefficients to exactly zero. This can improve model interpretability and reduce overfitting and that is why it is used over the basic logistic regresion.
+
+LASSO logistic regression is a valuable tool when you have high-dimensional datasets with potentially redundant or irrelevant features. It can improve model performance, reduce overfitting, and enhance model interpretability by automatically selecting the most relevant predictors while eliminating the least important ones. However, the choice between basic logistic regression and LASSO logistic regression depends on the specific characteristics of your data and the goals of your analysis.
+
+## Fit a LASSO logistic regression model and choose the best model
+
+```{r}
+#Dropping unused level
+training$Diabetes_binary <- droplevels(training$Diabetes_binary)
+testing$Diabetes_binary <- droplevels(testing$Diabetes_binary)
+
+training <- training[1:250,]
+
+#Setting control for the train control  
+control <- trainControl(method = "cv", number = 5, classProbs = TRUE, summaryFunction = mnLogLoss)
+
+#Fitting a LASSO logistic regression model 
+model_lasso <- train(Diabetes_binary ~ Sex + Income + Age + BMI + MentHlth + PhysHlth + HighBP + Fruits + HvyAlcoholConsump + NoDocbcCost,
+  data = training,
+  method = "glmnet",
+  trControl =control,
+  tuneGrid = expand.grid(alpha = 1, lambda = seq(0.001, 1, length = 100))
+)
+
+#Predict
+pred_model_lasso <- predict(model_lasso, newdata = testing, type = "prob")
+
+#Turn values into 1's and 0's for the log loss calculation
+testing$Diabetes_binary <- ifelse(testing$Diabetes_binary == "No", 0, 1)
+
+# LogLoss function with explicit conversion to numeric
+LogLoss <- function(actual, predicted) {
+  result <- -1 / length(actual) * sum((actual * log(predicted) + (1 - actual) * log(1 - predicted)))
+  return(result)
+}
+
+# Calculate log loss on the testing set
+test_logloss <- LogLoss(testing$Diabetes_binary, pred_model_lasso)
+
+test_logloss
+
+# Display the log loss on the testing set
+cat("Log Loss on Testing Set:", test_logloss, "\n")
+```
+## _what a classification tree model is and why we might try to use it?_
+
+A classification tree, specifically known as a decision tree for classification, is a model designed for classifying data. It recursively divides the input space into regions, assigning a class label to each region. The decision-making process is visualized as a tree structure, where internal nodes represent decisions based on specific features, branches depict the outcomes of those decisions, and leaf nodes contain the final predicted classes. The construction of a classification tree involves selecting optimal features to split the data at each internal node, with the process continuing until a stopping criterion is met, such as a maximum tree depth or a minimum number of samples in a leaf node. The tree's depth and complexity are controlled by different values of the complexity parameter, typically determined through cross-validation to select the best parameter.
+
+We might choose to use a classification tree for several reasons. It offers benefits such as excellent interpretability, no assumption of linearity, handling of both numeric and non-numeric data, automatic variable selection, insensitivity to feature scale, robustness to outliers, suitability for imbalanced data, and its role as a building block for ensemble methods, enhancing predictive performance.
+
+## Fit a classification tree with varying values for the complexity parameter and choose the best model (best complexity parameter)
+
+```{r}
+#Set seed for reproducibility
+set.seed(123)
+
+# Create 5-fold cross-validation indices
+folds <- createFolds(training$Diabetes_binary, k = 5, list = TRUE, returnTrain = FALSE)
+
+# Create a grid of complexity parameter values to try
+cp_values <- seq(0.01, 0.1, by = 0.01)
+
+# Create a data frame to store log loss for each complexity parameter
+logloss_df <- data.frame(cp = numeric(length(cp_values)), logloss = numeric(length(cp_values)))
+
+# Loop through different complexity parameters
+for (i in seq_along(cp_values)) {
+  avg_logloss <- 0
+  
+  # Perform 5-fold cross-validation
+  for (fold in seq_along(folds)) {
+    # Extract training and validation sets
+    training_set <- training[-folds[[fold]], ]
+    validation_set <- training[folds[[fold]], ]
+    
+    # Build the classification tree on the training set
+    tree_model <- rpart(Diabetes_binary ~ Sex + Income + Age + BMI + MentHlth + PhysHlth + HighBP + Fruits + HvyAlcoholConsump + NoDocbcCost, data = training_set, method = "class", control = rpart.control(cp = cp_values[i]))
+    
+    # Make predictions on the validation set
+    predictions <- predict(tree_model, newdata = validation_set, type = "prob")[, 2]
+    
+    # Calculate log loss on the validation set
+    fold_logloss <- logLoss(as.numeric(validation_set$Diabetes_binary) - 1, predictions)
+    
+    avg_logloss <- avg_logloss + fold_logloss
+  }
+  
+  # Calculate average log loss over all folds
+  avg_logloss <- avg_logloss / length(folds)
+  
+  # Store average log loss in the data frame
+  logloss_df[i, ] <- c(cp = cp_values[i], logloss = avg_logloss)
+}
+
+# Find the best complexity parameter with the minimum average log loss
+best_cp <- logloss_df$cp[which.min(logloss_df$logloss)]
+
+# Build the final classification tree with the best complexity parameter
+final_tree_model <- rpart(Diabetes_binary ~ Sex + Income + Age + BMI + MentHlth + PhysHlth + HighBP + Fruits + HvyAlcoholConsump + NoDocbcCost, data = training, method = "class", control = rpart.control(cp = best_cp))
+
+# Display the best complexity parameter
+cat("Best Complexity Parameter:", best_cp, "\n")
+
+# Display the final tree
+print(final_tree_model)
+
+# Evaluate the final model on the testing set
+test_predictions <- predict(final_tree_model, newdata = testing, type = "prob")[, 2]
+
+# Calculate log loss on the testing set
+test_logloss <- logLoss(as.numeric(testing$Diabetes_binary) - 1, test_predictions)
+
+# Display the log loss on the testing set
+cat("Log Loss on Testing Set:", test_logloss, "\n")
+```
+## What a bagged CART model is?
+
+A bagged CART (Bootstrap Aggregating for Classification and Regression Trees) model is an ensemble machine learning technique aimed at enhancing predictive model stability and accuracy while mitigating overfitting. The process involves creating multiple bootstrap samples from the original dataset by randomly selecting data points with replacement. Each bootstrap sample is used to train an independent CART model (decision tree). The predictions from all individual trees are then combined to form the final ensemble prediction. For classification tasks, the mode of predictions is often used, while the average is employed for regression problems. Bagging creates diversity in the models by training them on different subsets of the data, making the ensemble more robust and less prone to overfitting.
+
+
+## Fit a bagged CART and choose the best model
+
+```{r}
+testing$Diabetes_binary <- factor(testing$Diabetes_binary, levels = c(0, 1), labels = c("No", "Pre"))
+
+#Setting control for the train control  
+control <- trainControl(method = "cv", number = 5, classProbs = TRUE, summaryFunction = mnLogLoss)
+
+# Fit a bagged model (using bagged trees) on the training data
+model_bagged <- train(Diabetes_binary ~ Sex + Income + Age + BMI + MentHlth + PhysHlth + HighBP + Fruits + HvyAlcoholConsump + NoDocbcCost, data = training, method = "treebag", trControl = control)
+
+# Predict probabilities on the testing set
+pred_probabilities <- predict(model_bagged, newdata = testing, type = "prob")
+
+# Turn values into 1's and 0's for the log loss calculation
+testing$Diabetes_binary <- as.numeric(testing$Diabetes_binary) - 1
+
+pred_prob_pre <- pred_probabilities[,"Pre"]
+
+# LogLoss function with epsilon to avoid log(0)
+LogLoss <- function(actual, predicted) {
+  epsilon <- 1e-15  # Small epsilon value to avoid log(0)
+
+  # Add epsilon to avoid log(0) or log(1)
+  predicted <- pmax(pmin(predicted, 1 - epsilon), epsilon)
+
+  result <- -1 / length(actual) * sum((actual * log(predicted) + (1 - actual) * log(1 - predicted)))
+  return(result)
+}
+# Calculate log loss on the testing set
+test_logloss <- LogLoss(testing$Diabetes_binary, pred_prob_pre)
+
+test_logloss
+
+# Display the log loss on the testing set
+cat("Log Loss on Testing Set:", test_logloss, "\n")
+```
 
 ## _What a logistic regression is and why we apply it to this kind of data?_
 
@@ -367,44 +534,7 @@ y_pred3 <- predict(model3, newdata = testing, type = "response")
 
 #Making a table to compare the logLoss metric values and pick the smallest value  
 comparing <- c(y_pred1, y_pred2, y_pred3)
-
 ```
-
-## _What a LASSO logistic regression model is and why we might try to use this over basic logistic regresion?_
-
-LASSO (Least Absolute Shrinkage and Selection Operator) is a type of regularized logistic regression. It adds a penalty term to the logistic regression's likelihood function to encourage feature selection by driving some coefficients to exactly zero. This can improve model interpretability and reduce overfitting and that is why it is used over the basic logistic regresion.
-
-LASSO logistic regression is a valuable tool when you have high-dimensional datasets with potentially redundant or irrelevant features. It can improve model performance, reduce overfitting, and enhance model interpretability by automatically selecting the most relevant predictors while eliminating the least important ones. However, the choice between basic logistic regression and LASSO logistic regression depends on the specific characteristics of your data and the goals of your analysis
-
-## Fit a LASSO logistic regression model and choose the best model
-
-#model_lasso <- train(Diabetes_binary ~ ., data = training_data, method = "glmnet",
- #                    trControl = trainControl(method = "cv", number = 5),
-  #                   tuneGrid = expand.grid(alpha = 1, lambda = seq(0.001, 1, by = 0.001)))
-
-
-## _what a classification tree model is and why we might try to use it?_
-
-A classification tree is a decision tree that is used for classification tasks. It recursively splits the data into subsets based on the predictors and their values to make predictions. Different values of the complexity parameter control the tree's depth and complexity. Cross-validation is typically used to select the best complexity parameter.
-
-## Fit a classification tree with varying values for the complexity parameter and choose the best model (best complexity parameter)
-
-
-# Fit a classification tree
-#tree_model <- rpart(Diabetes_binary ~ ., data = training_data, method = "class")
-
-# Define the control parameters for the rpart function
-#ctrl <- rpart.control(cp = 0.01) # Start with a small value for cp
-
-# Fit the tree with cross-validation and find the best cp value
-#cv_tree_model <- rpart(Diabetes_binary ~ ., data = training_data, method = "class", control = ctrl)
-
-# Print the complexity parameter table
-#printcp(cv_tree_model)
-
-#Prune the tree
-#best_tree_model <- prune(cv_tree_model, cp = best_cp_value)
-
 
 ## _what a random forest is and why we might use it instead of a basic classification tree?_
 
@@ -435,23 +565,12 @@ rf_grid <- expand.grid(.mtry = c(2, 4, 6))
 
 #summary(rf_fit)
 ```
-## Two models thast was not done in class
 
-Model 1: Add answer
-Model 2: Oblique Random Forest
+## What the Oblique Random Forest model is?
 
-## What the Model 1 is?
+Answer
 
-Add answer
-
-## Fit a Model 1 and choose the best model
-
-Add answer
-
-## What the Model 2 is?
-
-
-## Fit a Model 2 and choose the best model
+## Fit a Oblique Random Forest model and choose the best model
 ```{r ORF Model}  
 #Fitting the model with the same variable combinations as the logistic regression done earlier  
 ORF_fit2 <- (Diabetes_binary ~ Age*PhysActivity, data = training)  
