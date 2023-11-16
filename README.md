@@ -9,51 +9,47 @@
 
 # List of R packages
 
-library(rmarkdown) To load package  
+library(readr)  
 
-library(readr)     To read data into R  
+library(dplyr)  
 
-library(dplyr)      To clean data  
+library(ggplot2)  
 
-library(ggplot2)   To plot graphs  
+library(caret)  
 
-library(caret)     To create predictive models and test them  
+library(rmarkdown)  
 
-library(shiny)    To automate the creation of 5 github_documents  
+library(purrr)  
 
-library(purr)    
+library(glmnet)  
 
-library(glm)     
+library(randomForest)  
 
-library(randomForest)
+library(gbm)  
 
-# Render the R Markdown file to README.md
+library(Metrics)  #For logLoss()  
 
-rmarkdown::render("Project 3.Rmd", output_format = "github_document", output_file = "PredictiveModels.md") 
+library(cvms)  
 
-# Automation of different education level .md files 
+library(rpart)  
 
-#For all level of education
-#get unique education levels
-Education_levels <- unique(diabetes_data$Education)
 
-#create filenames
-output_file <- paste0(Education_levels, ".md")
+# Automation code of different education level .md files 
 
-#create a list for each level of education with just the level name parameter
-params = lapply(Education_levels, FUN = function(x){list(Education = x)})
-
-#Put into a data frame
-reports <- tibble(output_file, params)
-
-# knit
-apply(reports, MARGIN = 1, FUN = function(x){render(input = "Project 3.Rmd", output_file = x[[1]], params = x[[2]])
+lapply(unique(diabetes_data$Education), function(Education.i) {
+  rmarkdown::render("Project3.Rmd",
+                    params = list(Education = Education.i),
+                    output_file = paste0(Education.i, ".md"))
 })
 
-# Links to .html files of the generated analyses
+## Links to .html files of the generated analyses
 
-#Analysis for [None/Elementary](link)
-#Analysis for [Some High School] (link)
-#Analysis for [High School Graduate] (link)
-#Analysis for [Some Collage] (link)
-#Analysis for [College Graduate] (link)
+Analysis for [None/Elementary](link)  
+
+Analysis for [Some High School] (link)  
+
+Analysis for [High School Graduate] (link)  
+
+Analysis for [Some Collage] (link)  
+
+Analysis for [College Graduate] (link)  
