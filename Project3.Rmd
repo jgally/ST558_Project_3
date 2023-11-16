@@ -7,9 +7,10 @@ params:
  Education: "Elementary"
 ---
 
-#```{r setup, include=FALSE}
-#knitr::opts_chunk$set(echo = TRUE)
-#```
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(warning = FALSE, message = FALSE)
+```
+
 # 1. Introduction section
 
 The data analyzed in this report is derived from the Diabetes Health Indicators Dataset, which was gathered through the Behavioral Risk Factor Surveillance System (BRFSS) in the year 2015. The BRFSS is an annual health-related telephone survey conducted by the Centers for Disease Control and Prevention (CDC). This dataset encompasses a substantial collection of over 200,000 survey responses, featuring 21 distinct variables or factors, along with a pivotal response variable termed "Diabetes_binary." This response variable comprises three discrete levels:
@@ -34,6 +35,7 @@ In the end, the entire analysis will be segmented based on the level of educatio
 
 # 2. Required packages section
 ```{r}
+#Reading in libraries
 library(readr)  
 library(dplyr)  
 library(ggplot2)  
@@ -47,7 +49,11 @@ library(Metrics)  #For logLoss()
 library(cvms)
 library(rpart)  
 ```
-# 3. Data section
+
+# 3. Data section  
+
+In this section we change most of the variables into factors and label them with appropriate names.  
+
 ```{r}
 #readin data  
 diabetes_data <- read_csv("diabetes_binary_health_indicators_BRFSS2015.csv")  
@@ -185,9 +191,9 @@ sum_data2 <- subset_data %>%
 print(sum_data2)
 ```
 
-After initial group summaries we then made several contingency tables in order to observe some of the possible relationships between variables. Based on these contingency tables we were able to numerically see where some trends might occur.  
-
 ## Contingency Tables  
+
+After initial group summaries we then made several contingency tables in order to observe some of the possible relationships between variables. Based on these contingency tables we were able to numerically see where some trends might occur. 
 
 ```{r}
 
@@ -216,9 +222,10 @@ After initial group summaries we then made several contingency tables in order t
  tbl_six
 ```
 
-We then looked at some additional combinations of variables in graphs to observe other relationships within the data. In these plots we are attempting to graph possible relationships between variables. If any trends are found it could give insight to which variables are important to use in our predictive modeling. 
 
-## Plots
+## Plots  
+
+We then looked at some additional combinations of variables in graphs to observe other relationships within the data. In these plots we are attempting to graph possible relationships between variables. If any trends are found it could give insight to which variables are important to use in our predictive modeling. 
 
 ```{r}
 #Plot 1 is a violin plot that illustrates the distribution of the Mental Health variable across the two sex categories, female and male.
@@ -290,14 +297,8 @@ Below begins the work to shift into modeling our data. We had some initial issue
 
 
 ```{r} 
-#Turning all diabetes responses to NA
-#subset_data$Diabetes_binary[subset_data$Diabetes_binary == "Diabetes"] <- NA  
-
 #Dropping level
 subset_data$Diabetes_binary <- droplevels(subset_data$Diabetes_binary)  
-
-#Dropping all NA responses
-#training <- diabetes_data[complete.cases(diabetes_data),]  
 
 #Setting seed for reproducibility
 set.seed(3033)  
@@ -311,7 +312,6 @@ testing <- subset_data[-intrain,]
 
 #Smaller training set for computations  
 training <- training[1:250,]
-
 ```
 ## _What log loss is and why we may prefer it to things like accuracy?_
 
@@ -326,12 +326,6 @@ LASSO logistic regression is a valuable tool when you have high-dimensional data
 ## Fit a LASSO logistic regression model and choose the best model
 
 ```{r}
-#Dropping unused level
-#training$Diabetes_binary <- droplevels(training$Diabetes_binary)
-#testing$Diabetes_binary <- droplevels(testing$Diabetes_binary)
-
-#training <- training[1:250,]
-
 #Setting control for the train control  
 control <- trainControl(method = "cv", number = 5, classProbs = TRUE, summaryFunction = mnLogLoss)
 
@@ -362,7 +356,8 @@ test_logloss_lasso
 
 # Display the log loss on the testing set
 cat("Log Loss on Testing Set:", test_logloss_lasso, "\n")
-```
+```  
+
 ## _what a classification tree model is and why we might try to use it?_
 
 A classification tree, specifically known as a decision tree for classification, is a model designed for classifying data. It recursively divides the input space into regions, assigning a class label to each region. The decision-making process is visualized as a tree structure, where internal nodes represent decisions based on specific features, branches depict the outcomes of those decisions, and leaf nodes contain the final predicted classes. The construction of a classification tree involves selecting optimal features to split the data at each internal node, with the process continuing until a stopping criterion is met, such as a maximum tree depth or a minimum number of samples in a leaf node. The tree's depth and complexity are controlled by different values of the complexity parameter, typically determined through cross-validation to select the best parameter.
@@ -433,7 +428,8 @@ test_logloss_tree <- abs(logLoss(as.numeric(testing$Diabetes_binary) - 1, test_p
 
 # Display the log loss on the testing set
 cat("Log Loss on Testing Set:", test_logloss_tree, "\n")
-```
+```  
+
 ## What a bagged CART model is?
 
 A bagged CART (Bootstrap Aggregating for Classification and Regression Trees) model is an ensemble machine learning technique aimed at enhancing predictive model stability and accuracy while mitigating overfitting. The process involves creating multiple bootstrap samples from the original dataset by randomly selecting data points with replacement. Each bootstrap sample is used to train an independent CART model (decision tree). The predictions from all individual trees are then combined to form the final ensemble prediction. For classification tasks, the mode of predictions is often used, while the average is employed for regression problems. Bagging creates diversity in the models by training them on different subsets of the data, making the ensemble more robust and less prone to overfitting.
@@ -442,6 +438,7 @@ A bagged CART (Bootstrap Aggregating for Classification and Regression Trees) mo
 ## Fit a bagged CART and choose the best model
 
 ```{r}
+#Changing factor levels for eased calculations
 testing$Diabetes_binary <- factor(testing$Diabetes_binary, levels = c(0, 1), labels = c("No", "Pre"))
 
 #Setting control for the train control  
@@ -481,7 +478,8 @@ cat("Log Loss on Testing Set:", test_logloss_cart, "\n")
 
 Logistic regression is a form of predictive analysis in which the regression models the relationship(s) of a binary response variable to one or more other variables. Typically we think of linear regression models, but generalized linear models, such as logistic regression, are used in cases in which the general assumptions of linear models are broken. The general assumptions of a linear model are that the model is for a continuous response, errors are normally distributed, and that constant variance can be assumed. In this case our `Diabetes_binary` variable could do well being modeled by logistic regression. In our data `Diabetes_binary` has two recorded responses of either 0 "No diabetes" or 1 "Prediabetes"; this is not a continuous response and therefore a general linear model cannot be used. A typical logistic function can be backsolved to result in showing what is called a link function. The link function shows how a linear model could be fit to our response variable. The link function of logistic regression is called the logit function and models the log odds of success. The log odds of success is the probability that the success (or 1 response) will occur. In this scenario it feels wrong to call prediabetes a success; however, we will satistically still consider 1 "Prediabetes" to be the success.  
 
-## Fit  3 candidate logistic regression models and choose the best
+## Fit  3 candidate logistic regression models and choose the best  
+
 ```{r}
 #Setting trainControl to include cv  
 my_ctrl <- trainControl(method = "cv", number = 5, classProbs = TRUE, summaryFunction = mnLogLoss)
@@ -526,12 +524,12 @@ m3 <- model3$results$logLoss
 #Observing Summaries  
 model3   
 
-
 #Making a table to compare the logLoss metric values and pick the smallest value  
 comparing <- c(Model1 = m1, Model2 = m2,Model3 = m3)
 best_logistic_model <- names(which.min(comparing))  
 best_logistic_model
 
+#building a contender item to automate returning the name of the model that worked the best  
 log_contender <- if (best_logistic_model == "Model1"){
            log_contender <- model1
            } else if (best_logistic_model == "Model2"){
@@ -545,20 +543,23 @@ log_contender <- if (best_logistic_model == "Model1"){
 log_result <- predict(log_contender, newdata = testing, type = "prob")  
 
 #Saving the testing values as an object so that they can be turned numeric for calculations  
-#binary_num <- as.numeric(testing$Diabetes_binary)  
+testing$Diabetes_binary <- as.numeric(testing$Diabetes_binary)  
+
+#Picking the pre (prediabetes) column to use in my logloss function  
+success_col <- log_result[,"Pre"]
 
 #Creating a log loss function to compare the final results  
 LogLoss_values <- function(binary_num, pred)
 {
- -mean(binary_num * log(pred) + (1 - binary_num) * log(1 - pred))
+ abs(-mean(binary_num * log(pred) + (1 - binary_num) * log(1 - pred)))
 }
 
 #Gathering the logLoss value of the predicted logistic candidate to compare to other models  
-#logistic_logLoss <- LogLoss_values(binary_num, log_result)  
-#print(logistic_logLoss)
+logistic_logLoss <- LogLoss_values(testing$Diabetes_binary, success_col)  
+print(logistic_logLoss)
 
-#comparing <- c(y_pred1, y_pred2, y_pred3)
-
+# Display the log loss on the testing set
+cat("Log Loss on Testing Set:", logistic_logLoss, "\n")
 ```
 
 ## _what a random forest is and why we might use it instead of a basic classification tree?_
@@ -606,10 +607,6 @@ print(rf_fit)
 
 ## What the Oblique Random Forest model is?
 
-Answer
-
-<<<<<<< HEAD
-Add answer
 
 ## Fit a Model 1 and choose the best model
 
@@ -661,11 +658,14 @@ Lasso <- test_logloss_lasso
 #Bringing the tree best model  
 Tree <- test_logloss_tree  
 
-#Brining the cart best model  
+#Bringing the cart best model  
 Cart <- test_logloss_cart  
 
+#Bringing in the logistic best model  
+Logistic <- logistic_logLoss 
+
 #Comparing the models  
-best_of_best <- c(Lasso_Model = Lasso, Tree_Model = Tree, Cart_Model = Cart)  
+best_of_best <- c(Lasso_Model = Lasso, Tree_Model = Tree, Cart_Model = Cart, Logistic_Model = Logistic)  
 best <- names(which.min(best_of_best))  
 
 # Get the name or identifier of the best model
@@ -673,38 +673,5 @@ best_model <- paste(best)
 
 # Print the result
 cat("The best model is:", best_model, "with log loss:", best_of_best[best], "\n")  
-
 ```
-
-
-## NO SURE IN WHAT POINT WE SHOULD ADD THIS PIECE OF CODE :/
-
-## X. Automation
-```{r}
-#Do it for 1 first and then all level of education
-#rmarkdown::render("Project 3.Rmd", out_put_file = "None_Elementary.md", params = list(Education = "None/Elementary"))
-
-#For all level of education
-#get unique education levels
-#Education_levels <- unique(diabetes_data$Education)
-
-#create filenames
-#output_file <- paste0(Education_levels, ".md") 
-
-#lapply(unique(diabetes_data$Education), function(Education.i) {
-  #rmarkdown::render("Project3.Rmd",
-                    #params = list(Education = Education.i),
-                    #output_file = paste0(Education.i, ".md"))
-#})
-#
-#create a list for each level of education with just the level name parameter
-#params = lapply(Education_levels, FUN = function(x){list(Education = x)})
-
-#Put into a data frame
-#reports <- tibble(output_file, params)
-#
-# knit
-#apply(reports, MARGIN = 1, FUN = function(x){render(input = "Project3.Rmd", output_file = x[[1]], params = x[[2]])})
-```
-
 End report! :)
