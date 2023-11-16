@@ -693,6 +693,7 @@ pls_result <- predict(pls_best, newdata = testing)
 #Turning values into 0 and 1 for the log loss calculation
 testing$Diabetes_binary <- ifelse(testing$Diabetes_binary == "No", 0, 1)
 
+
 #Picking the pre (prediabetes) column to use in my logloss function  
 pre_col <- ifelse(pls_result == "No", 0, 1)
 
