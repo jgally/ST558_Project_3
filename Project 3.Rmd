@@ -45,12 +45,9 @@ library(purrr)
 library(glmnet)
 library(randomForest)  
 library(gbm) 
-library(ModelMetrics)
-library(Metrics)  #For logLoss() 
-library(MLmetrics)  #For logLoss() 
+library(Metrics)  #For logLoss()  
 library(cvms)
 library(rpart)  
-library(MASS)
 ```
 # 3. Data section
 ```{r cleaning_data}
