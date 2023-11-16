@@ -51,10 +51,10 @@ lapply(unique(diabetes_data$Education), function(Education.i) {
 
 Analysis for [Elementary](https://jgally.github.io/ST558_Project_3/Elementary.html)  
 
-Analysis for [Some High School] (https://jgally.github.io/ST558_Project_3/Some_High_School.html)  
+Analysis for [Some High School](https://jgally.github.io/ST558_Project_3/Some_High_School.html)  
 
-Analysis for [High School Graduate] (https://jgally.github.io/ST558_Project_3/High_School_Graduate.html)  
+Analysis for [High School Graduate](https://jgally.github.io/ST558_Project_3/High_School_Graduate.html)  
 
-Analysis for [Some Collage] (https://jgally.github.io/ST558_Project_3/Some_College.html)  
+Analysis for [Some Collage](https://jgally.github.io/ST558_Project_3/Some_College.html)  
 
-Analysis for [College Graduate] (https://jgally.github.io/ST558_Project_3/College_Graduate.html)  
+Analysis for [College Graduate](https://jgally.github.io/ST558_Project_3/College_Graduate.html)  
