@@ -97,9 +97,9 @@ diabetes_data <- read_csv("diabetes_binary_health_indicators_BRFSS2015.csv")
 ```
 
     ## Rows: 253680 Columns: 22
-    ## ── Column specification ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+    ## ── Column specification ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
     ## Delimiter: ","
-    ## dbl (22): Diabetes_binary, HighBP, HighChol, CholCheck, BMI, Smoker, Stroke, HeartDiseaseorAttack, PhysActivity, Fruits, Veggies, HvyAlcoholConsump, A...
+    ## dbl (22): Diabetes_binary, HighBP, HighChol, CholCheck, BMI, Smoker, Stroke, HeartDiseaseorAttack, PhysActivity, Fruits, Veggies, HvyAlcoholConsump, ...
     ## 
     ## ℹ Use `spec()` to retrieve the full column specification for this data.
     ## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
@@ -1080,6 +1080,7 @@ pls_result <- predict(pls_best, newdata = testing)
 
 #Turning values into 0 and 1 for the log loss calculation
 testing$Diabetes_binary <- ifelse(testing$Diabetes_binary == "No", 0, 1)
+
 
 #Picking the pre (prediabetes) column to use in my logloss function  
 pre_col <- ifelse(pls_result == "No", 0, 1)

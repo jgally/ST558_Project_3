@@ -97,9 +97,9 @@ diabetes_data <- read_csv("diabetes_binary_health_indicators_BRFSS2015.csv")
 ```
 
     ## Rows: 253680 Columns: 22
-    ## ── Column specification ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+    ## ── Column specification ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
     ## Delimiter: ","
-    ## dbl (22): Diabetes_binary, HighBP, HighChol, CholCheck, BMI, Smoker, Stroke, HeartDiseaseorAttack, PhysActivity, Fruits, Veggies, HvyAlcoholConsump, A...
+    ## dbl (22): Diabetes_binary, HighBP, HighChol, CholCheck, BMI, Smoker, Stroke, HeartDiseaseorAttack, PhysActivity, Fruits, Veggies, HvyAlcoholConsump, ...
     ## 
     ## ℹ Use `spec()` to retrieve the full column specification for this data.
     ## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
@@ -373,7 +373,7 @@ plot1 <- ggplot(subset_data, aes(x = Sex, y = MentHlth)) +
 print(plot1)
 ```
 
-![](High_School_Graduate_files/figure-gfm/unnamed-chunk-174-1.png)<!-- -->
+![](High_School_Graduate_files/figure-gfm/unnamed-chunk-20-1.png)<!-- -->
 
 ``` r
 #Plot 2 is a stacked bar plot that depicts the distribution of the Physical Activity variable across all age groups, with each group represented by a different color.
@@ -385,7 +385,7 @@ plot2 <- ggplot(data = subset_data, aes(x = Age, y = PhysActivity , fill = Age))
 print(plot2)
 ```
 
-![](High_School_Graduate_files/figure-gfm/unnamed-chunk-174-2.png)<!-- -->
+![](High_School_Graduate_files/figure-gfm/unnamed-chunk-20-2.png)<!-- -->
 
 ``` r
 #Plot 3 is a scatter plot designed to visualize the relationship between the Body Mass Index (BMI) and Mental Health variables, with points colored by sex (female and male)
@@ -397,7 +397,7 @@ plot3 <- ggplot(subset_data, aes(x = BMI, y = MentHlth)) +
 print(plot3)
 ```
 
-![](High_School_Graduate_files/figure-gfm/unnamed-chunk-174-3.png)<!-- -->
+![](High_School_Graduate_files/figure-gfm/unnamed-chunk-20-3.png)<!-- -->
 
 ``` r
 #Plot 4 is a count plot of income versus mental health and color coded by the response variable of Diabetes_binary  
@@ -408,7 +408,7 @@ plot4 <- ggplot(subset_data, aes(x = Income, y = MentHlth)) +
 print(plot4)
 ```
 
-![](High_School_Graduate_files/figure-gfm/unnamed-chunk-174-4.png)<!-- -->
+![](High_School_Graduate_files/figure-gfm/unnamed-chunk-20-4.png)<!-- -->
 
 ``` r
 #Plot 5 is a count plot of income versus physical health and color coded by the response variable of Diabetes_binary  
@@ -419,7 +419,7 @@ plot5 <- ggplot(subset_data, aes(x = Income, y = PhysHlth)) +
 print(plot5)
 ```
 
-![](High_School_Graduate_files/figure-gfm/unnamed-chunk-174-5.png)<!-- -->
+![](High_School_Graduate_files/figure-gfm/unnamed-chunk-20-5.png)<!-- -->
 
 ``` r
 #Plot 6 is a bar plot of diabetes_binary versus mental health used to uncrowd the graphs
@@ -431,7 +431,7 @@ plot6 <- ggplot(subset_data, aes(x = MentHlth)) +
 print(plot6)  
 ```
 
-![](High_School_Graduate_files/figure-gfm/unnamed-chunk-174-6.png)<!-- -->
+![](High_School_Graduate_files/figure-gfm/unnamed-chunk-20-6.png)<!-- -->
 
 ``` r
 #Plot 7 is a bar plot of diabetes_binary versus physical health used to uncrowd the graphs
@@ -443,7 +443,7 @@ plot7 <- ggplot(subset_data, aes(x = PhysHlth)) +
 print(plot7)  
 ```
 
-![](High_School_Graduate_files/figure-gfm/unnamed-chunk-174-7.png)<!-- -->
+![](High_School_Graduate_files/figure-gfm/unnamed-chunk-20-7.png)<!-- -->
 
 ``` r
 #Plot 8 is a bar plot of diabetes_binary versus income used to uncrowd the graphs
@@ -455,7 +455,7 @@ plot8 <- ggplot(subset_data, aes(x = Income)) +
 print(plot8)  
 ```
 
-![](High_School_Graduate_files/figure-gfm/unnamed-chunk-174-8.png)<!-- -->
+![](High_School_Graduate_files/figure-gfm/unnamed-chunk-20-8.png)<!-- -->
 
 # 5. Modeling
 
@@ -1088,6 +1088,7 @@ pls_result <- predict(pls_best, newdata = testing)
 
 #Turning values into 0 and 1 for the log loss calculation
 testing$Diabetes_binary <- ifelse(testing$Diabetes_binary == "No", 0, 1)
+
 
 #Picking the pre (prediabetes) column to use in my logloss function  
 pre_col <- ifelse(pls_result == "No", 0, 1)
