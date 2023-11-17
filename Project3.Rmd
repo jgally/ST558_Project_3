@@ -1,9 +1,6 @@
 ---
-<<<<<<< HEAD
 title: "Diabetes Data : `r params$Education` Analysis"
-=======
 title: "Project 3 - diabetes_data: `r params$Education` Analysis""
->>>>>>> 4d864a283a8569c668c1411a5f647d3797b31df9
 author: "Jasmine Gallaway and Keren Vivas"
 date: "`r Sys.Date()`"
 output: github_document
