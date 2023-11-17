@@ -1,7 +1,11 @@
 ---
+<<<<<<< HEAD
 title: "Diabetes Data : `r params$Education` Analysis"
+=======
+title: "Project 3 - diabetes_data: `r params$Education` Analysis""
+>>>>>>> 4d864a283a8569c668c1411a5f647d3797b31df9
 author: "Jasmine Gallaway and Keren Vivas"
-date: "2023-10-30"
+date: "`r Sys.Date()`"
 output: github_document
 params:
  Education: "Elementary"
@@ -37,6 +41,7 @@ In the end, the entire analysis will be segmented based on the level of educatio
 # 2. Required packages section
 ```{r}
 #Reading in libraries
+<<<<<<< HEAD
 library(readr)  
 library(dplyr)  
 library(ggplot2)  
@@ -50,6 +55,20 @@ library(Metrics)  #For logLoss()
 library(cvms)
 library(rpart)  
 library(pls)
+=======
+library(readr)        #For reading    
+library(dplyr)        #For data manipulation
+library(ggplot2)      #For plotting
+library(caret)        #For modeling
+library(rmarkdown)    #For creating of dynamic documents
+library(purrr)        #For data manipulation
+library(glmnet)       #For Lasso model
+library(randomForest) #For random forest model
+library(gbm)          #Fors boosting model
+library(Metrics)      #For logLoss()  
+library(cvms)         #For cross-validation
+library(rpart)        #For tree model
+>>>>>>> 4d864a283a8569c668c1411a5f647d3797b31df9
 ```
 
 # 3. Data section  
@@ -297,7 +316,6 @@ print(plot8)
 
 Below begins the work to shift into modeling our data. We had some initial issues with modeling due to our labeling of the variables. We also had some modeling issues due to there being no recorded responses of 2 / "Diabetes" within the `Diabetes_binary` dataset. Due to this lack of response, the "Diabetes" level of `Diabetes_binary` had to be removed in order for the models to work. The code chunk directly below removes that factor level. Some of the variables we arbitrarily chose to focus on in our modeling are Sex, Income, Age, BMI, MentHlth, PhysHlth, HighBP, Fruits, HvyAlcoholConsump, and NodocbcCost. Variable selection can be done with penalization modeling such as LASSO.
 
-
 ```{r} 
 #Dropping level
 subset_data$Diabetes_binary <- droplevels(subset_data$Diabetes_binary)  
@@ -478,7 +496,7 @@ cat("Log Loss on Testing Set:", test_logloss_cart, "\n")
 
 ## _What a logistic regression is and why we apply it to this kind of data?_
 
-Logistic regression is a form of predictive analysis in which the regression models the relationship(s) of a binary response variable to one or more other variables. Typically we think of linear regression models, but generalized linear models, such as logistic regression, are used in cases in which the general assumptions of linear models are broken. The general assumptions of a linear model are that the model is for a continuous response, errors are normally distributed, and that constant variance can be assumed. In this case our `Diabetes_binary` variable could do well being modeled by logistic regression. In our data `Diabetes_binary` has two recorded responses of either 0 "No diabetes" or 1 "Prediabetes"; this is not a continuous response and therefore a general linear model cannot be used. A typical logistic function can be backsolved to result in showing what is called a link function. The link function shows how a linear model could be fit to our response variable. The link function of logistic regression is called the logit function and models the log odds of success. The log odds of success is the probability that the success (or 1 response) will occur. In this scenario it feels wrong to call prediabetes a success; however, we will satistically still consider 1 "Prediabetes" to be the success.  
+Logistic regression is a form of predictive analysis in which the regression models the relationship(s) of a binary response variable to one or more other variables. Typically we think of linear regression models, but generalized linear models, such as logistic regression, are used in cases in which the general assumptions of linear models are broken. The general assumptions of a linear model are that the model is for a continuous response, errors are normally distributed, and that constant variance can be assumed. In this case our `Diabetes_binary` variable could do well being modeled by logistic regression. In our data `Diabetes_binary` has two recorded responses of either 0 "No diabetes" or 1 "Prediabetes"; this is not a continuous response and therefore a general linear model cannot be used. A typical logistic function can be backsolved to result in showing what is called a link function. The link function shows how a linear model could be fit to our response variable. The link function of logistic regression is called the logit function and models the log odds of success. The log odds of success is the probability that the success (or 1 response) will occur. In this scenario it feels wrong to call prediabetes a success; however, we will statistically still consider 1 "Prediabetes" to be the success.  
 
 ## Fit 3 candidate logistic regression models and choose the best  
 
