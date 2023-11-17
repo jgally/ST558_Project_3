@@ -1,5 +1,5 @@
 ---
-title: "Project 3"
+title: "Diabetes Data : `r params$Education` Analysis"
 author: "Jasmine Gallaway and Keren Vivas"
 date: "2023-10-30"
 output: github_document
@@ -8,9 +8,9 @@ params:
 ---
 
 
-#``{r setup, include=FALSE}
-#knitr::opts_chunk$set(warning = FALSE, message = FALSE)
-#```
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(warning = FALSE, message = FALSE)
+```
 
 # 1. Introduction section
 

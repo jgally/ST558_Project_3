@@ -1,10 +1,7 @@
-Project 3
+Diabetes Data : Elementary Analysis
 ================
 Jasmine Gallaway and Keren Vivas
 2023-10-30
-
-\#\`\`{r setup, include=FALSE} \#knitr::opts_chunk\$set(warning = FALSE,
-message = FALSE) \#\`\`\`
 
 # 1. Introduction section
 
@@ -94,17 +91,7 @@ them with appropriate names.
 ``` r
 #readin data  
 diabetes_data <- read_csv("diabetes_binary_health_indicators_BRFSS2015.csv")  
-```
 
-    ## Rows: 253680 Columns: 22
-    ## ── Column specification ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-    ## Delimiter: ","
-    ## dbl (22): Diabetes_binary, HighBP, HighChol, CholCheck, BMI, Smoker, Stroke, HeartDiseaseorAttack, PhysActivity, Fruits, Veggies, HvyAlcoholConsump, ...
-    ## 
-    ## ℹ Use `spec()` to retrieve the full column specification for this data.
-    ## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
-
-``` r
 #making a tibble
 diabetes_data <- as_tibble(diabetes_data)  
 
@@ -535,11 +522,7 @@ model_lasso <- train(Diabetes_binary ~ Sex + Income + Age + BMI + MentHlth + Phy
   trControl =control,
   tuneGrid = expand.grid(alpha = 1, lambda = seq(0.001, 1, length = 100))
 )
-```
 
-    ## Warning in train.default(x, y, weights = w, ...): The metric "Accuracy" was not in the result set. logLoss will be used instead.
-
-``` r
 #Predict
 pred_model_lasso <- predict(model_lasso, newdata = testing, type = "prob")
 
@@ -697,11 +680,7 @@ control <- trainControl(method = "cv", number = 5, classProbs = TRUE, summaryFun
 
 # Fit a bagged model (using bagged trees) on the training data
 model_bagged <- train(Diabetes_binary ~ Sex + Income + Age + BMI + MentHlth + PhysHlth + HighBP + Fruits + HvyAlcoholConsump + NoDocbcCost, data = training, method = "treebag", trControl = control)
-```
 
-    ## Warning in train.default(x, y, weights = w, ...): The metric "Accuracy" was not in the result set. logLoss will be used instead.
-
-``` r
 # Predict probabilities on the testing set
 pred_probabilities <- predict(model_bagged, newdata = testing, type = "prob")
 
@@ -798,27 +777,7 @@ model2 <- train(Diabetes_binary ~ Age*PhysActivity, data = training,
                 trControl = my_ctrl,
                 metric = "logLoss",
                 family = binomial(link = "logit"))  
-```
 
-    ## Warning in predict.lm(object, newdata, se.fit, scale = 1, type = if (type == : prediction from rank-deficient fit; attr(*, "non-estim") has doubtful
-    ## cases
-
-    ## Warning in predict.lm(object, newdata, se.fit, scale = 1, type = if (type == : prediction from rank-deficient fit; attr(*, "non-estim") has doubtful
-    ## cases
-
-    ## Warning in predict.lm(object, newdata, se.fit, scale = 1, type = if (type == : prediction from rank-deficient fit; attr(*, "non-estim") has doubtful
-    ## cases
-
-    ## Warning in predict.lm(object, newdata, se.fit, scale = 1, type = if (type == : prediction from rank-deficient fit; attr(*, "non-estim") has doubtful
-    ## cases
-
-    ## Warning in predict.lm(object, newdata, se.fit, scale = 1, type = if (type == : prediction from rank-deficient fit; attr(*, "non-estim") has doubtful
-    ## cases
-
-    ## Warning in predict.lm(object, newdata, se.fit, scale = 1, type = if (type == : prediction from rank-deficient fit; attr(*, "non-estim") has doubtful
-    ## cases
-
-``` r
 #Saving logLoss value  
 m2 <- model2$results$logLoss  
 

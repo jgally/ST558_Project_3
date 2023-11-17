@@ -1,10 +1,7 @@
-Project 3
+Diabetes Data : High_School_Graduate Analysis
 ================
 Jasmine Gallaway and Keren Vivas
 2023-10-30
-
-\#\`\`{r setup, include=FALSE} \#knitr::opts_chunk\$set(warning = FALSE,
-message = FALSE) \#\`\`\`
 
 # 1. Introduction section
 
@@ -94,17 +91,7 @@ them with appropriate names.
 ``` r
 #readin data  
 diabetes_data <- read_csv("diabetes_binary_health_indicators_BRFSS2015.csv")  
-```
 
-    ## Rows: 253680 Columns: 22
-    ## ── Column specification ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-    ## Delimiter: ","
-    ## dbl (22): Diabetes_binary, HighBP, HighChol, CholCheck, BMI, Smoker, Stroke, HeartDiseaseorAttack, PhysActivity, Fruits, Veggies, HvyAlcoholConsump, ...
-    ## 
-    ## ℹ Use `spec()` to retrieve the full column specification for this data.
-    ## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
-
-``` r
 #making a tibble
 diabetes_data <- as_tibble(diabetes_data)  
 
@@ -373,7 +360,7 @@ plot1 <- ggplot(subset_data, aes(x = Sex, y = MentHlth)) +
 print(plot1)
 ```
 
-![](High_School_Graduate_files/figure-gfm/unnamed-chunk-20-1.png)<!-- -->
+![](High_School_Graduate_files/figure-gfm/unnamed-chunk-21-1.png)<!-- -->
 
 ``` r
 #Plot 2 is a stacked bar plot that depicts the distribution of the Physical Activity variable across all age groups, with each group represented by a different color.
@@ -385,7 +372,7 @@ plot2 <- ggplot(data = subset_data, aes(x = Age, y = PhysActivity , fill = Age))
 print(plot2)
 ```
 
-![](High_School_Graduate_files/figure-gfm/unnamed-chunk-20-2.png)<!-- -->
+![](High_School_Graduate_files/figure-gfm/unnamed-chunk-21-2.png)<!-- -->
 
 ``` r
 #Plot 3 is a scatter plot designed to visualize the relationship between the Body Mass Index (BMI) and Mental Health variables, with points colored by sex (female and male)
@@ -397,7 +384,7 @@ plot3 <- ggplot(subset_data, aes(x = BMI, y = MentHlth)) +
 print(plot3)
 ```
 
-![](High_School_Graduate_files/figure-gfm/unnamed-chunk-20-3.png)<!-- -->
+![](High_School_Graduate_files/figure-gfm/unnamed-chunk-21-3.png)<!-- -->
 
 ``` r
 #Plot 4 is a count plot of income versus mental health and color coded by the response variable of Diabetes_binary  
@@ -408,7 +395,7 @@ plot4 <- ggplot(subset_data, aes(x = Income, y = MentHlth)) +
 print(plot4)
 ```
 
-![](High_School_Graduate_files/figure-gfm/unnamed-chunk-20-4.png)<!-- -->
+![](High_School_Graduate_files/figure-gfm/unnamed-chunk-21-4.png)<!-- -->
 
 ``` r
 #Plot 5 is a count plot of income versus physical health and color coded by the response variable of Diabetes_binary  
@@ -419,7 +406,7 @@ plot5 <- ggplot(subset_data, aes(x = Income, y = PhysHlth)) +
 print(plot5)
 ```
 
-![](High_School_Graduate_files/figure-gfm/unnamed-chunk-20-5.png)<!-- -->
+![](High_School_Graduate_files/figure-gfm/unnamed-chunk-21-5.png)<!-- -->
 
 ``` r
 #Plot 6 is a bar plot of diabetes_binary versus mental health used to uncrowd the graphs
@@ -431,7 +418,7 @@ plot6 <- ggplot(subset_data, aes(x = MentHlth)) +
 print(plot6)  
 ```
 
-![](High_School_Graduate_files/figure-gfm/unnamed-chunk-20-6.png)<!-- -->
+![](High_School_Graduate_files/figure-gfm/unnamed-chunk-21-6.png)<!-- -->
 
 ``` r
 #Plot 7 is a bar plot of diabetes_binary versus physical health used to uncrowd the graphs
@@ -443,7 +430,7 @@ plot7 <- ggplot(subset_data, aes(x = PhysHlth)) +
 print(plot7)  
 ```
 
-![](High_School_Graduate_files/figure-gfm/unnamed-chunk-20-7.png)<!-- -->
+![](High_School_Graduate_files/figure-gfm/unnamed-chunk-21-7.png)<!-- -->
 
 ``` r
 #Plot 8 is a bar plot of diabetes_binary versus income used to uncrowd the graphs
@@ -455,7 +442,7 @@ plot8 <- ggplot(subset_data, aes(x = Income)) +
 print(plot8)  
 ```
 
-![](High_School_Graduate_files/figure-gfm/unnamed-chunk-20-8.png)<!-- -->
+![](High_School_Graduate_files/figure-gfm/unnamed-chunk-21-8.png)<!-- -->
 
 # 5. Modeling
 
@@ -535,11 +522,7 @@ model_lasso <- train(Diabetes_binary ~ Sex + Income + Age + BMI + MentHlth + Phy
   trControl =control,
   tuneGrid = expand.grid(alpha = 1, lambda = seq(0.001, 1, length = 100))
 )
-```
 
-    ## Warning in train.default(x, y, weights = w, ...): The metric "Accuracy" was not in the result set. logLoss will be used instead.
-
-``` r
 #Predict
 pred_model_lasso <- predict(model_lasso, newdata = testing, type = "prob")
 
@@ -697,11 +680,7 @@ control <- trainControl(method = "cv", number = 5, classProbs = TRUE, summaryFun
 
 # Fit a bagged model (using bagged trees) on the training data
 model_bagged <- train(Diabetes_binary ~ Sex + Income + Age + BMI + MentHlth + PhysHlth + HighBP + Fruits + HvyAlcoholConsump + NoDocbcCost, data = training, method = "treebag", trControl = control)
-```
 
-    ## Warning in train.default(x, y, weights = w, ...): The metric "Accuracy" was not in the result set. logLoss will be used instead.
-
-``` r
 # Predict probabilities on the testing set
 pred_probabilities <- predict(model_bagged, newdata = testing, type = "prob")
 
@@ -769,21 +748,7 @@ model1 <- train(Diabetes_binary ~ Age + BMI + HighBP, data = training,
                 trControl = my_ctrl,
                 metric = "logLoss",
                 family = binomial(link = "logit"))  
-```
 
-    ## Warning in predict.lm(object, newdata, se.fit, scale = 1, type = if (type == : prediction from rank-deficient fit; attr(*, "non-estim") has doubtful
-    ## cases
-
-    ## Warning in predict.lm(object, newdata, se.fit, scale = 1, type = if (type == : prediction from rank-deficient fit; attr(*, "non-estim") has doubtful
-    ## cases
-
-    ## Warning in predict.lm(object, newdata, se.fit, scale = 1, type = if (type == : prediction from rank-deficient fit; attr(*, "non-estim") has doubtful
-    ## cases
-
-    ## Warning in predict.lm(object, newdata, se.fit, scale = 1, type = if (type == : prediction from rank-deficient fit; attr(*, "non-estim") has doubtful
-    ## cases
-
-``` r
 #Saving logLoss value  
 m1 <- model1$results$logLoss  
 
@@ -812,21 +777,7 @@ model2 <- train(Diabetes_binary ~ Age*PhysActivity, data = training,
                 trControl = my_ctrl,
                 metric = "logLoss",
                 family = binomial(link = "logit"))  
-```
 
-    ## Warning in predict.lm(object, newdata, se.fit, scale = 1, type = if (type == : prediction from rank-deficient fit; attr(*, "non-estim") has doubtful
-    ## cases
-
-    ## Warning in predict.lm(object, newdata, se.fit, scale = 1, type = if (type == : prediction from rank-deficient fit; attr(*, "non-estim") has doubtful
-    ## cases
-
-    ## Warning in predict.lm(object, newdata, se.fit, scale = 1, type = if (type == : prediction from rank-deficient fit; attr(*, "non-estim") has doubtful
-    ## cases
-
-    ## Warning in predict.lm(object, newdata, se.fit, scale = 1, type = if (type == : prediction from rank-deficient fit; attr(*, "non-estim") has doubtful
-    ## cases
-
-``` r
 #Saving logLoss value  
 m2 <- model2$results$logLoss  
 
