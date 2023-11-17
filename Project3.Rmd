@@ -1,7 +1,7 @@
 ---
-title: "Project 3"
+title: "Project 3 - diabetes_data: `r params$Education` Analysis""
 author: "Jasmine Gallaway and Keren Vivas"
-date: "2023-10-30"
+date: "`r Sys.Date()`"
 output: github_document
 params:
  Education: "Elementary"
@@ -36,18 +36,18 @@ In the end, the entire analysis will be segmented based on the level of educatio
 # 2. Required packages section
 ```{r}
 #Reading in libraries
-library(readr)  
-library(dplyr)  
-library(ggplot2)  
-library(caret) 
-library(rmarkdown)
-library(purrr)
-library(glmnet)
-library(randomForest)  
-library(gbm) 
-library(Metrics)  #For logLoss()  
-library(cvms)
-library(rpart)  
+library(readr)        #For reading    
+library(dplyr)        #For data manipulation
+library(ggplot2)      #For plotting
+library(caret)        #For modeling
+library(rmarkdown)    #For creating of dynamic documents
+library(purrr)        #For data manipulation
+library(glmnet)       #For Lasso model
+library(randomForest) #For random forest model
+library(gbm)          #Fors boosting model
+library(Metrics)      #For logLoss()  
+library(cvms)         #For cross-validation
+library(rpart)        #For tree model
 ```
 
 # 3. Data section  
