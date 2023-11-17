@@ -1,7 +1,7 @@
-Diabetes Data : High_School_Graduate Analysis
+Project 3 diabetes_data: High_School_Graduate Analysis
 ================
 Jasmine Gallaway and Keren Vivas
-2023-10-30
+2023-11-16
 
 # 1. Introduction section
 
@@ -68,19 +68,19 @@ the relationship between health, lifestyle, and diabetes risk.
 
 ``` r
 #Reading in libraries
-library(readr)  
-library(dplyr)  
-library(ggplot2)  
-library(caret) 
-library(rmarkdown)
-library(purrr)
-library(glmnet)
-library(randomForest)  
-library(gbm) 
-library(Metrics)  #For logLoss()  
-library(cvms)
-library(rpart)  
-library(pls)
+library(readr)        #For reading    
+library(dplyr)        #For data manipulation
+library(ggplot2)      #For plotting
+library(caret)        #For modeling
+library(rmarkdown)    #For creating of dynamic documents
+library(purrr)        #For data manipulation
+library(glmnet)       #For Lasso model
+library(randomForest) #For random forest model
+library(gbm)          #Fors boosting model
+library(Metrics)      #For logLoss()  
+library(cvms)         #For cross-validation
+library(rpart)        #For tree model  
+library(pls)          #For Partial Least Squares Model
 ```
 
 # 3. Data section
@@ -360,7 +360,7 @@ plot1 <- ggplot(subset_data, aes(x = Sex, y = MentHlth)) +
 print(plot1)
 ```
 
-![](High_School_Graduate_files/figure-gfm/unnamed-chunk-21-1.png)<!-- -->
+![](High_School_Graduate_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
 
 ``` r
 #Plot 2 is a stacked bar plot that depicts the distribution of the Physical Activity variable across all age groups, with each group represented by a different color.
@@ -372,7 +372,7 @@ plot2 <- ggplot(data = subset_data, aes(x = Age, y = PhysActivity , fill = Age))
 print(plot2)
 ```
 
-![](High_School_Graduate_files/figure-gfm/unnamed-chunk-21-2.png)<!-- -->
+![](High_School_Graduate_files/figure-gfm/unnamed-chunk-6-2.png)<!-- -->
 
 ``` r
 #Plot 3 is a scatter plot designed to visualize the relationship between the Body Mass Index (BMI) and Mental Health variables, with points colored by sex (female and male)
@@ -384,7 +384,7 @@ plot3 <- ggplot(subset_data, aes(x = BMI, y = MentHlth)) +
 print(plot3)
 ```
 
-![](High_School_Graduate_files/figure-gfm/unnamed-chunk-21-3.png)<!-- -->
+![](High_School_Graduate_files/figure-gfm/unnamed-chunk-6-3.png)<!-- -->
 
 ``` r
 #Plot 4 is a count plot of income versus mental health and color coded by the response variable of Diabetes_binary  
@@ -395,7 +395,7 @@ plot4 <- ggplot(subset_data, aes(x = Income, y = MentHlth)) +
 print(plot4)
 ```
 
-![](High_School_Graduate_files/figure-gfm/unnamed-chunk-21-4.png)<!-- -->
+![](High_School_Graduate_files/figure-gfm/unnamed-chunk-6-4.png)<!-- -->
 
 ``` r
 #Plot 5 is a count plot of income versus physical health and color coded by the response variable of Diabetes_binary  
@@ -406,7 +406,7 @@ plot5 <- ggplot(subset_data, aes(x = Income, y = PhysHlth)) +
 print(plot5)
 ```
 
-![](High_School_Graduate_files/figure-gfm/unnamed-chunk-21-5.png)<!-- -->
+![](High_School_Graduate_files/figure-gfm/unnamed-chunk-6-5.png)<!-- -->
 
 ``` r
 #Plot 6 is a bar plot of diabetes_binary versus mental health used to uncrowd the graphs
@@ -418,7 +418,7 @@ plot6 <- ggplot(subset_data, aes(x = MentHlth)) +
 print(plot6)  
 ```
 
-![](High_School_Graduate_files/figure-gfm/unnamed-chunk-21-6.png)<!-- -->
+![](High_School_Graduate_files/figure-gfm/unnamed-chunk-6-6.png)<!-- -->
 
 ``` r
 #Plot 7 is a bar plot of diabetes_binary versus physical health used to uncrowd the graphs
@@ -430,7 +430,7 @@ plot7 <- ggplot(subset_data, aes(x = PhysHlth)) +
 print(plot7)  
 ```
 
-![](High_School_Graduate_files/figure-gfm/unnamed-chunk-21-7.png)<!-- -->
+![](High_School_Graduate_files/figure-gfm/unnamed-chunk-6-7.png)<!-- -->
 
 ``` r
 #Plot 8 is a bar plot of diabetes_binary versus income used to uncrowd the graphs
@@ -442,7 +442,7 @@ plot8 <- ggplot(subset_data, aes(x = Income)) +
 print(plot8)  
 ```
 
-![](High_School_Graduate_files/figure-gfm/unnamed-chunk-21-8.png)<!-- -->
+![](High_School_Graduate_files/figure-gfm/unnamed-chunk-6-8.png)<!-- -->
 
 # 5. Modeling
 
@@ -734,7 +734,7 @@ The link function of logistic regression is called the logit function
 and models the log odds of success. The log odds of success is the
 probability that the success (or 1 response) will occur. In this
 scenario it feels wrong to call prediabetes a success; however, we will
-satistically still consider 1 “Prediabetes” to be the success.
+statistically still consider 1 “Prediabetes” to be the success.
 
 ## Fit 3 candidate logistic regression models and choose the best
 
@@ -848,7 +848,7 @@ log_contender <- if (best_logistic_model == "Model1"){
 }
 
 #Prediction for contending logistic model with testing data  
-#**Due to my model objects being train objects the actual predict function that R uses to run is predict.train which requires type = "prob" for classification problems  
+#Due to my model objects being train objects the actual predict function that R uses to run is predict.train which requires type = "prob" for classification problems  
 log_result <- predict(log_contender, newdata = testing, type = "prob")  
 
 #Saving the testing values as numerict so that they can be used for calculations  

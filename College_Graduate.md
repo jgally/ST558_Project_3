@@ -1,7 +1,7 @@
-Diabetes Data : College_Graduate Analysis
+Project 3 diabetes_data: College_Graduate Analysis
 ================
 Jasmine Gallaway and Keren Vivas
-2023-10-30
+2023-11-16
 
 # 1. Introduction section
 
@@ -68,19 +68,19 @@ the relationship between health, lifestyle, and diabetes risk.
 
 ``` r
 #Reading in libraries
-library(readr)  
-library(dplyr)  
-library(ggplot2)  
-library(caret) 
-library(rmarkdown)
-library(purrr)
-library(glmnet)
-library(randomForest)  
-library(gbm) 
-library(Metrics)  #For logLoss()  
-library(cvms)
-library(rpart)  
-library(pls)
+library(readr)        #For reading    
+library(dplyr)        #For data manipulation
+library(ggplot2)      #For plotting
+library(caret)        #For modeling
+library(rmarkdown)    #For creating of dynamic documents
+library(purrr)        #For data manipulation
+library(glmnet)       #For Lasso model
+library(randomForest) #For random forest model
+library(gbm)          #Fors boosting model
+library(Metrics)      #For logLoss()  
+library(cvms)         #For cross-validation
+library(rpart)        #For tree model  
+library(pls)          #For Partial Least Squares Model
 ```
 
 # 3. Data section
@@ -734,7 +734,7 @@ The link function of logistic regression is called the logit function
 and models the log odds of success. The log odds of success is the
 probability that the success (or 1 response) will occur. In this
 scenario it feels wrong to call prediabetes a success; however, we will
-satistically still consider 1 “Prediabetes” to be the success.
+statistically still consider 1 “Prediabetes” to be the success.
 
 ## Fit 3 candidate logistic regression models and choose the best
 
@@ -848,7 +848,7 @@ log_contender <- if (best_logistic_model == "Model1"){
 }
 
 #Prediction for contending logistic model with testing data  
-#**Due to my model objects being train objects the actual predict function that R uses to run is predict.train which requires type = "prob" for classification problems  
+#Due to my model objects being train objects the actual predict function that R uses to run is predict.train which requires type = "prob" for classification problems  
 log_result <- predict(log_contender, newdata = testing, type = "prob")  
 
 #Saving the testing values as numerict so that they can be used for calculations  
