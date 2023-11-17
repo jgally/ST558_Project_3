@@ -1,8 +1,7 @@
 ---
-title: "Diabetes Data : `r params$Education` Analysis"
-title: "Project 3 - diabetes_data: `r params$Education` Analysis""
+title: "Project 3 - diabetes_data: `r params$Education` Analysis"
 author: "Jasmine Gallaway and Keren Vivas"
-date: "`r Sys.Date()`"
+date: "2023-11-16"
 output: github_document
 params:
  Education: "Elementary"
